@@ -1,0 +1,90 @@
+body {
+    margin: 0;
+    background-color: #001E29;
+    font-family: roboto;
+    color: #F8F8FF;
+}
+
+header {
+    text-align: center;
+    background-color: #004B66;
+    padding: 0.1em;
+}
+
+header h1 {
+    letter-spacing: 0.5ch;
+    margin: 0.3em auto 0.1em 0;
+}
+
+header p {
+    margin: 0 auto 0.6em auto;
+}
+
+body div {
+    background-color: #70D9FF;
+    overflow: auto;
+}
+
+body div h2 {
+    background-color: #0087B8;
+    margin: 0;
+    padding: 0.3em;
+}
+
+#missions-cards div {
+    float: left;
+    margin: 1em;
+}
+
+#missions-cards table {
+    text-align: center;
+    border-collapse: collapse;
+    background-color: #F8F8FF;
+    color: black;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+#missions-cards td {
+    width: 50%;
+    border: 2px solid black;
+    padding: 0.4em;
+}
+
+#highest-kills {
+    background-color: yellow;
+}
+
+#progress-content {
+    padding: 2em;
+}
+
+#progress-bar {
+    border: 5px solid black;
+    height: 3em;
+    background-color: #F8F8FF;
+    display: grid;
+}
+
+#progress-bar p {
+    font-size: 1.6em;
+    margin: 0;
+    grid-column: 1;
+    grid-row: 1;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+    margin: auto;
+}
+
+#progress-bar div {
+    background-color: #30b630;
+    width: 1%;
+    height: 100%;
+    grid-column: 1;
+    grid-row: 1;
+}
+
+#progress-content h3 {
+    color: black;
+}
