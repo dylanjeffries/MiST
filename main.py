@@ -141,8 +141,6 @@ def other_thread():
     # Get latest journal
     journal = get_latest_journal_filename(config["data-path"])
 
-    # journal = "C:\\Users\\geniu\\Saved Games\\Frontier Developments\\Elite Dangerous\\tester.txt"
-
     # Start listening for journal changes
     messages = q.Queue()
     observer = Observer()
