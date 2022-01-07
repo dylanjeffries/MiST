@@ -19,7 +19,7 @@ def get_latest_journal_filename(path):
 
 faction_missions = {}
 progress = {"required_kills": 0, "target_kills": 0, "non_target_kills": 0,
-    "target_total_reward": 0, "non_target_total_reward": 0}
+            "target_total_reward": 0, "non_target_total_reward": 0}
 
 
 @eel.expose
@@ -60,15 +60,18 @@ def process_message(message_json):
 
     if message["event"] == "MissionAccepted":
         # Construct missions details containing KillCount and Reward
-        details = {k: v for k, v in message.items() if k in ["KillCount", "Reward", "TargetFaction"]}
+        details = {k: v for k, v in message.items(
+        ) if k in ["KillCount", "Reward", "TargetFaction"]}
         faction_missions.setdefault(message["Faction"], {"missions": [],
-         "total_kills": 0, 
-         "total_credits": 0,
-         "is_highest_kills": False})
+                                                         "total_kills": 0,
+                                                         "total_credits": 0,
+                                                         "is_highest_kills": False})
 
         faction_missions[message["Faction"]]["missions"].append(details)
-        faction_missions[message["Faction"]]["total_kills"] += details["KillCount"]
-        faction_missions[message["Faction"]]["total_credits"] += details["Reward"]
+        faction_missions[message["Faction"]
+                         ]["total_kills"] += details["KillCount"]
+        faction_missions[message["Faction"]
+                         ]["total_credits"] += details["Reward"]
         set_highest_kill_count()
 
         # Update front-end
@@ -84,25 +87,24 @@ def process_message(message_json):
         else:
             progress["non_target_kills"] += 1
             progress["non_target_total_reward"] += message["TotalReward"]
-        
+
         # Update front-end
         eel.updateProgress(progress)
 
 
 def other_thread():
-    # Load config 
+    # Load config
     with open("config.yaml", "r") as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
     # Get latest journal
     journal = get_latest_journal_filename(config["data-path"])
 
-    # journal = "C:\\Users\\geniu\\Saved Games\\Frontier Developments\\Elite Dangerous\\tester.txt"
-
     # Start listening for journal changes
     messages = q.Queue()
     observer = Observer()
-    observer.schedule(Listener(journal, messages), path=config["data-path"], recursive=False)
+    observer.schedule(Listener(journal, messages),
+                      path=config["data-path"], recursive=False)
     observer.start()
 
     # Main loop
