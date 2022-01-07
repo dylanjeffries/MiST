@@ -1,7 +1,7 @@
 faction_missions: dict
     faction: dict
-        missions: array
-            mission: dict
+        missions: dict
+            MissionID: dict
                 KillCount: int
                 Reward: int
                 TargetFaction: string

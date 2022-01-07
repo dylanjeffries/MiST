@@ -1,9 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
 body {
     margin: 0;
     background-color: #001E29;
     font-family: roboto;
     color: #F8F8FF;
 }
+
+/* Header and Menu */
 
 header {
     text-align: center;
@@ -20,7 +24,9 @@ header p {
     margin: 0 auto 0.6em auto;
 }
 
-body div {
+/*  */
+
+body > div {
     background-color: #70D9FF;
     overflow: auto;
 }
@@ -31,8 +37,36 @@ body div h2 {
     padding: 0.3em;
 }
 
+/* Missions */
+
+#missions-content {
+    padding: 0 2em 0 2em;
+}
+
+#missions-content h3 {
+    color: black;
+}
+
+#missions-cards {
+    overflow: auto;
+    white-space: nowrap;
+}
+
+#missions-cards::-webkit-scrollbar {
+    height: 1em;
+}
+
+#missions-cards::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#missions-cards::-webkit-scrollbar-thumb {
+    background: #606060;
+    border-radius: 100vw;
+}
+
 #missions-cards div {
-    float: left;
+    display: inline-grid;
     margin: 1em;
 }
 
@@ -43,6 +77,10 @@ body div h2 {
     color: black;
     width: 100%;
     margin-bottom: 1em;
+}
+
+#mission-completed {
+    background-color: lightblue;
 }
 
 #missions-cards td {
@@ -68,7 +106,6 @@ body div h2 {
 
 #progress-bar p {
     font-size: 1.6em;
-    margin: 0;
     grid-column: 1;
     grid-row: 1;
     color: black;

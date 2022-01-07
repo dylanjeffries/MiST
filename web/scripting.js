@@ -9,19 +9,22 @@ function addText(text) {
 eel.expose(addText);
 
 function updateMissions(missions) {
+  // Keep track of total mission rewards
+  var totalReward = 0;
+
   // Get the div for the missions by faction and empty the div
   var all_missions = document.getElementById("missions-cards");
   all_missions.innerHTML = "";
 
   // For every mission providing faction and their missions
-  for (const [key, value] of Object.entries(missions)) {
+  for (const [faction_name, faction_info] of Object.entries(missions)) {
 
       div = document.createElement("div");
 
       // Create table for individual missions and set title to faction name
       table = document.createElement("table");
       title = table.insertRow().insertCell();
-      title.innerHTML = key;
+      title.innerHTML = faction_name;
       title.colSpan = 2;
 
       // Create row for column names
@@ -30,20 +33,24 @@ function updateMissions(missions) {
       colnames.insertCell().innerHTML = "Credits";
       
       // For every mission from the current faction, create a row
-      value["missions"].forEach(faction_mission => {
+      for (const [mission_id, mission_info] of Object.entries(faction_info["missions"])) {
           row = table.insertRow();
-          row.insertCell().innerHTML = faction_mission["KillCount"];
-          row.insertCell().innerHTML = faction_mission["Reward"].toLocaleString("en-us");
-      });
+          row.insertCell().innerHTML = mission_info["KillCount"];
+          row.insertCell().innerHTML = mission_info["Reward"].toLocaleString("en-us");
+          if (mission_info["Completed"]) {
+            row.id = "mission-completed"
+          }
+          totalReward += mission_info["Reward"]
+      }
 
       div.appendChild(table);
 
       // Create a new table containing the total values from the rows of each column
       table = document.createElement("table");
       row = table.insertRow();
-      row.insertCell().innerHTML = value["total_kills"];
-      row.insertCell().innerHTML = value["total_credits"].toLocaleString("en-us");
-      if (value["is_highest_kills"]) {
+      row.insertCell().innerHTML = faction_info["total_kills"];
+      row.insertCell().innerHTML = faction_info["total_credits"].toLocaleString("en-us");
+      if (faction_info["is_highest_kills"]) {
           row.id = "highest-kills";
       }
 
@@ -51,6 +58,13 @@ function updateMissions(missions) {
 
       all_missions.appendChild(div);
   }
+
+  // Add Rewards Total to missions-content
+  var missions_content = document.getElementById("missions-content");
+  missions_content.innerHTML = "";
+  rewards_total_h3 = document.createElement("h3");
+  rewards_total_h3.innerHTML = "Rewards Total: " + totalReward.toLocaleString("en-us") + " cr";
+  missions_content.appendChild(rewards_total_h3);
 }
 eel.expose(updateMissions);
 
