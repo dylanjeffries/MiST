@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
 body {
     margin: 0;
     background-color: #001E29;
@@ -5,22 +7,47 @@ body {
     color: #F8F8FF;
 }
 
+/* Header and Menu */
+
 header {
     text-align: center;
     background-color: #004B66;
     padding: 0.1em;
+    display: grid;
 }
 
-header h1 {
+header div {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+#menu {
+    display: flex;
+    align-items: center;
+}
+
+#menu label {
+    cursor: pointer;
+    padding: 0 1em 0 1em;
+    font-size: 2em;
+}
+
+#menu input {
+    display: none;
+}
+
+#title h1 {
     letter-spacing: 0.5ch;
     margin: 0.3em auto 0.1em 0;
 }
 
-header p {
+#title p {
     margin: 0 auto 0.6em auto;
 }
 
-body div {
+/*  */
+
+body > div {
     background-color: #70D9FF;
     overflow: auto;
 }
@@ -68,7 +95,6 @@ body div h2 {
 
 #progress-bar p {
     font-size: 1.6em;
-    margin: 0;
     grid-column: 1;
     grid-row: 1;
     color: black;
