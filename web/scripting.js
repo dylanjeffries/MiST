@@ -1,104 +1,76 @@
-function callPython() {
-  eel.hello()
-}
-
-function addText(text) {
-  var div = document.getElementById("content");
-  div.innerHTML += "<br>" + text;
-}
-eel.expose(addText);
-
-function updateMissions(missions) {
+function update(data) {
   // Keep track of total mission rewards
   var totalReward = 0;
 
   // Get the div for the missions by faction and empty the div
-  var all_missions = document.getElementById("missions-cards");
-  all_missions.innerHTML = "";
+  var missionsCards = document.getElementById("missions-cards");
+  missionsCards.innerHTML = "";
 
   // For every mission providing faction and their missions
-  for (const [faction_name, faction_info] of Object.entries(missions)) {
+  for (const [faction_name, faction_info] of Object.entries(data["factions_missions"])) {
 
-      div = document.createElement("div");
+      var div = document.createElement("div");
 
       // Create table for individual missions and set title to faction name
-      table = document.createElement("table");
-      title = table.insertRow().insertCell();
+      var table = document.createElement("table");
+      var title = table.insertRow().insertCell();
       title.innerHTML = faction_name;
       title.colSpan = 2;
 
       // Create row for column names
-      colnames = table.insertRow();
+      var colnames = table.insertRow();
       colnames.insertCell().innerHTML = "Kills";
-      colnames.insertCell().innerHTML = "Credits";
+      colnames.insertCell().innerHTML = "Reward";
       
       // For every mission from the current faction, create a row
       for (const [mission_id, mission_info] of Object.entries(faction_info["missions"])) {
-          row = table.insertRow();
-          row.insertCell().innerHTML = mission_info["KillCount"];
-          row.insertCell().innerHTML = mission_info["Reward"].toLocaleString("en-us");
-          if (mission_info["Completed"]) {
+          var row = table.insertRow();
+          row.insertCell().innerHTML = mission_info["kills"];
+          row.insertCell().innerHTML = mission_info["reward"].toLocaleString("en-us");
+          if (mission_info["is_complete"]) {
             row.id = "mission-completed"
           }
-          totalReward += mission_info["Reward"]
+          totalReward += mission_info["reward"]
       }
 
       div.appendChild(table);
 
       // Create a new table containing the total values from the rows of each column
-      table = document.createElement("table");
-      row = table.insertRow();
+      var table = document.createElement("table");
+      var row = table.insertRow();
       row.insertCell().innerHTML = faction_info["total_kills"];
-      row.insertCell().innerHTML = faction_info["total_credits"].toLocaleString("en-us");
+      row.insertCell().innerHTML = faction_info["total_reward"].toLocaleString("en-us");
       if (faction_info["is_highest_kills"]) {
           row.id = "highest-kills";
       }
 
       div.appendChild(table);
 
-      all_missions.appendChild(div);
+      missionsCards.appendChild(div);
   }
 
-  // Add Rewards Total to missions-content
-  var missions_content = document.getElementById("missions-content");
-  missions_content.innerHTML = "";
-  rewards_total_h3 = document.createElement("h3");
-  rewards_total_h3.innerHTML = "Rewards Total: " + totalReward.toLocaleString("en-us") + " cr";
-  missions_content.appendChild(rewards_total_h3);
+  // Set Reward Total
+  var totalRewardHeading = document.getElementById("rewards-total");
+  totalRewardHeading.innerHTML = `Rewards Total: ${totalReward.toLocaleString("en-us")} cr`;
+
+  // Progress Bar
+  var barContainer = document.getElementById("progress-bar");
+  var bar = barContainer.getElementsByTagName("div")[0];
+  var label = barContainer.getElementsByTagName("p")[0];
+  var barRatio = data["player"]["target_kills"] / data["player"]["required_kills"];
+  bar.style.width = `${barRatio * 100}%`;
+  label.innerHTML = `${data["player"]["target_kills"]} / ${data["player"]["required_kills"]}`;
+
+  // Bounty Rewards
+  var targetBounties = document.getElementById("target-bounties");
+  targetBounties.innerHTML = `Target Bounties: ${data["player"]["target_total_reward"].toLocaleString("en-us")} cr`;
+  var nonTargetBounties = document.getElementById("non-target-bounties");
+  nonTargetBounties.innerHTML = `Non-Target Bounties: ${data["player"]["non_target_total_reward"].toLocaleString("en-us")} cr`;
+  var totalBounties = document.getElementById("total-bounties");
+  var totalBountiesValue = data["player"]["target_total_reward"] + data["player"]["non_target_total_reward"];
+  totalBounties.innerHTML = `Total Bounties: ${totalBountiesValue.toLocaleString("en-us")} cr`;
 }
-eel.expose(updateMissions);
-
-function updateProgress(progress) {
-  // Get the div for progress and empty it
-  var progress_div = document.getElementById("progress-content");
-  progress_div.innerHTML = "";
-
-  // Progress bar
-  bar = document.createElement("div");
-  bar.id = "progress-bar"
-  bar_actual = document.createElement("div");
-  bar_actual.style.width = ((progress["target_kills"] / progress["required_kills"]) * 100) + "%";
-  bar.appendChild(bar_actual);
-  bar_label = document.createElement("p");
-  bar_label.innerHTML = progress["target_kills"] + " / " + progress["required_kills"];
-  bar.appendChild(bar_label);
-  progress_div.appendChild(bar);
-
-  // Bounty rewards
-  target_bounties = document.createElement("h3");
-  target_bounties.innerHTML = "Target Bounties: " + progress["target_total_reward"].toLocaleString("en-us") + " cr";
-  progress_div.appendChild(target_bounties);
-
-  non_target_bounties = document.createElement("h3");
-  non_target_bounties.innerHTML = "Non-Target Bounties: " + progress["non_target_total_reward"].toLocaleString("en-us") + " cr";
-  progress_div.appendChild(non_target_bounties);
-
-  total_bounties = document.createElement("h3")
-  total_bounties_value = progress["non_target_total_reward"] + progress["target_total_reward"];
-  total_bounties.innerHTML = "Total Bounties: " + total_bounties_value.toLocaleString("en-us") + " cr";
-  progress_div.appendChild(total_bounties)
-}
-eel.expose(updateProgress);
+eel.expose(update);
 
 // Page load
-eel.load();
+eel.reload();
