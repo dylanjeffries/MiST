@@ -38,58 +38,72 @@ body div h2 {
 /* Missions */
 
 #missions-content {
-    padding: 0 2em 0 2em;
+    padding: 2em;
 }
 
 #missions-content h3 {
     color: black;
+    margin-top: 0;
 }
 
-#missions-cards {
-    overflow: auto;
-    white-space: nowrap;
+#missions-tables {
+    overflow-x: scroll;
 }
 
-#missions-cards::-webkit-scrollbar {
-    height: 1em;
+#missions-tables::-webkit-scrollbar {
+    height: 0.7em;
 }
 
-#missions-cards::-webkit-scrollbar-track {
+#missions-tables::-webkit-scrollbar-track {
     background: transparent;
 }
 
-#missions-cards::-webkit-scrollbar-thumb {
+#missions-tables::-webkit-scrollbar-thumb {
     background: #606060;
-    border-radius: 100vw;
+    border-radius: 0.7em;
 }
 
-#missions-cards div {
-    display: inline-grid;
-    margin: 1em;
+@-moz-document url-prefix() {
+    #missions-tables {
+        scrollbar-color: #606060 transparent;
+        scrollbar-width: thin;
+    }
 }
 
-#missions-cards table {
+#missions-tables div {
+    display: grid;
+    gap: 1em 2em;
+    overflow: auto;
+    white-space: nowrap;
+    width: fit-content;
+}
+
+#missions-tables table {
+    background-color: white;
+    color: black;
     text-align: center;
     border-collapse: collapse;
-    background-color: #F8F8FF;
-    color: black;
-    width: 100%;
-    margin-bottom: 1em;
+    height: min-content;
 }
 
-#mission-completed {
-    background-color: lightblue;
-}
-
-#missions-cards td {
-    width: 50%;
+#missions-tables td {
     border: 2px solid black;
     padding: 0.4em;
 }
 
-#highest-kills {
+.row-2 {
+    grid-row: 2;
+}
+
+.lightgreen {
+    background-color: lightgreen;
+}
+
+.yellow {
     background-color: yellow;
 }
+
+/* Progress */
 
 #progress-content {
     padding: 2em;

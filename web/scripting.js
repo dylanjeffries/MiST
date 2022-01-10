@@ -3,24 +3,23 @@ function update(data) {
   var totalReward = 0;
 
   // Get the div for the missions by faction and empty the div
-  var missionsCards = document.getElementById("missions-cards");
-  missionsCards.innerHTML = "";
+  var missionsTables = document.getElementById("missions-tables");
+  missionsTables.innerHTML = "";
+  var div = document.createElement("div");
 
   // For every mission providing faction and their missions
   for (const [faction_name, faction_info] of Object.entries(data["factions_missions"])) {
 
-      var div = document.createElement("div");
-
       // Create table for individual missions and set title to faction name
       var table = document.createElement("table");
-      var title = table.insertRow().insertCell();
-      title.innerHTML = faction_name;
-      title.colSpan = 2;
+      var titleCell = table.insertRow().insertCell();
+      titleCell.innerHTML = faction_name;
+      titleCell.colSpan = 2;
 
       // Create row for column names
-      var colnames = table.insertRow();
-      colnames.insertCell().innerHTML = "Kills";
-      colnames.insertCell().innerHTML = "Reward";
+      var colnamesRow = table.insertRow();
+      colnamesRow.insertCell().innerHTML = "Kills";
+      colnamesRow.insertCell().innerHTML = "Reward";
       
       // For every mission from the current faction, create a row
       for (const [mission_id, mission_info] of Object.entries(faction_info["missions"])) {
@@ -28,26 +27,29 @@ function update(data) {
           row.insertCell().innerHTML = mission_info["kills"];
           row.insertCell().innerHTML = mission_info["reward"].toLocaleString("en-us");
           if (mission_info["is_complete"]) {
-            row.id = "mission-completed"
+            row.classList.add("lightgreen");
           }
           totalReward += mission_info["reward"]
       }
 
       div.appendChild(table);
 
-      // Create a new table containing the total values from the rows of each column
+      // Create a new table containing the sum values from the rows of each column
       var table = document.createElement("table");
+      table.classList.add("row-2");
       var row = table.insertRow();
-      row.insertCell().innerHTML = faction_info["total_kills"];
-      row.insertCell().innerHTML = faction_info["total_reward"].toLocaleString("en-us");
+      var highestDiff = faction_info["total_kills"] - data["player"]["required_kills"]
+      row.insertCell().innerHTML = `${faction_info["total_kills"]} kills ${(highestDiff === 0) ? "" : `(${highestDiff})`}`;
+      // row.insertCell().innerHTML = faction_info["total_reward"].toLocaleString("en-us");
       if (faction_info["is_highest_kills"]) {
-          row.id = "highest-kills";
+        row.classList.add("yellow");
       }
 
       div.appendChild(table);
-
-      missionsCards.appendChild(div);
   }
+
+  // Add div with all tables to missions-tables
+  missionsTables.appendChild(div);
 
   // Set Reward Total
   var totalRewardHeading = document.getElementById("rewards-total");
