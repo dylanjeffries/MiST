@@ -74,5 +74,54 @@ function update(data) {
 }
 eel.expose(update);
 
+function updateClock() {
+  var now = new Date();
+  var time = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+  document.getElementById("time").innerHTML = time;
+  setTimeout(updateClock, 1000); 
+}
+
+
+// Timer
+
+var timer = new easytimer.Timer();
+var timerHoursMode = false;
+
+function updateTimer() {
+  if (timerHoursMode) {
+      document.getElementById("timerText").innerHTML = `${(timer.getTotalTimeValues().seconds / 3600).toFixed(3)} hours`;
+  } else {
+      document.getElementById("timerText").innerHTML = timer.getTimeValues().toString();
+  }
+}
+
+timer.addEventListener('secondsUpdated', function () {
+  updateTimer();
+});
+timer.addEventListener('started', function () {
+  updateTimer();
+});
+timer.addEventListener('reset', function () {
+  updateTimer();
+});
+
+document.getElementById("timerStart").onclick = function () {
+  timer.start();
+};
+
+document.getElementById("timerPause").onclick = function () {
+  timer.pause();
+};
+
+document.getElementById("timerReset").onclick = function () {
+  timer.reset();
+  timer.stop();
+};
+
+document.getElementById("timerText").onclick = function () {
+  timerHoursMode = !timerHoursMode;
+  updateTimer();
+}
+
 // Page load
 eel.reload();
