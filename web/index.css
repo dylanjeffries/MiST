@@ -1,59 +1,11 @@
+/* Whole Document */
+
 body {
     margin: 0;
     background-color: #001E29;
     font-family: Roboto;
     color: #F8F8FF;
 }
-
-/* Header and Menu */
-
-header {
-    text-align: center;
-    background-color: #004B66;
-    padding: 0.1em;
-}
-
-header h1 {
-    letter-spacing: 0.5ch;
-    margin: 0.3em auto 0.1em 0;
-}
-
-header p {
-    margin: 0 auto 0.6em auto;
-}
-
-/* General Structure */
-
-body > div {
-    background-color: #70D9FF;
-    overflow: auto;
-}
-
-body h2 {
-    background-color: #0087B8;
-    margin: 0;
-    padding: 0.3em;
-}
-
-body > div > div {
-    padding: 2em;
-}
-
-
-/* Missions */
-
-#missions h3 {
-    color: black;
-    margin-top: 0;
-}
-
-#missions-tables {
-    overflow-x: scroll;
-}
-
-/* #missions-tables::-webkit-scrollbar {
-    height: 0.7em;
-} */
 
 ::-webkit-scrollbar {
     height: 0.7em;
@@ -73,6 +25,69 @@ body > div > div {
         scrollbar-color: #606060 transparent;
         scrollbar-width: thin;
     }
+}
+
+/* Header and Menu */
+
+header {
+    text-align: center;
+    background-color: #004B66;
+    padding: 0.1em;
+}
+
+header h1 {
+    letter-spacing: 0.5ch;
+    margin: 0.3em auto 0.1em 0;
+}
+
+header p {
+    margin: 0 auto 0.6em auto;
+}
+
+/* Sections and Content */
+
+section {
+    background-color: #70D9FF;
+    overflow: hidden;
+}
+
+.tab {
+    background-color: #0087B8;
+    padding: 0.7em;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+
+.tab h2 {
+    margin: 0;
+}
+
+.tab i {
+    font-size: xx-large;
+}
+
+.content {
+    padding: 2em;
+    transition: max-height 0.2s ease-out;
+}
+
+.collapsed {
+    display: none;
+}
+
+
+/* Missions */
+
+#missions h3 {
+    color: black;
+    margin-top: 0;
+}
+
+#missions-tables {
+    overflow-x: scroll;
 }
 
 #missions-tables div {
@@ -142,7 +157,7 @@ body > div > div {
 
 /* Timer */
 
-#timer > div {
+#timer .content {
     text-align: center;
 }
 

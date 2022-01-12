@@ -1,3 +1,5 @@
+// Data Update
+
 function update(data) {
   // Keep track of total mission rewards
   var totalReward = 0;
@@ -74,6 +76,8 @@ function update(data) {
 }
 eel.expose(update);
 
+// Clock
+
 function updateClock() {
   var now = new Date();
   var time = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
@@ -123,5 +127,17 @@ document.getElementById("timerText").onclick = function () {
   updateTimer();
 }
 
-// Page load
+// Collapsible Sections
+ 
+var tabs = document.getElementsByClassName("tab");
+for (let i = 0; i < tabs.length; i++) {
+  tabs[i].onclick = function () {
+    var is_collapsed = this.nextElementSibling.classList.toggle("collapsed");
+    this.lastElementChild.innerHTML = is_collapsed ? "expand_more" : "expand_less";
+  }
+}
+
+
+// Page Load
+
 eel.reload();

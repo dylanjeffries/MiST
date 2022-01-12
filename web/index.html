@@ -4,35 +4,50 @@
         <meta charset="UTF-8">
         <title>MiST: Mission Stacking Tracker</title>
         <link href='http://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="index.css"> 
         <script src="eel.js"></script>
         <script src="easytimer/easytimer.min.js"></script>
         <script defer src="scripting.js"></script>
     </head>
+
     <body>
+
         <header>
             <h1>MiST</h1>
             <p>Mission Stacking Tracker</p>
         </header>
-        <div id="missions">
-            <h2>Missions</h2>
-            <div>
+
+        <section id="missions">
+            <div class="tab">
+                <h2>Missions</h2>
+                <i class="material-icons">expand_less</i>
+            </div>
+            <div class="content">
                 <h3 id="rewards-total">Rewards Total: 0 cr</h3>
                 <div id="missions-tables"><div></div></div>
             </div>
-        </div>
-        <div id="progress">
-            <h2>Progress</h2>
-            <div>
+        </section>
+
+        <section id="progress">
+            <div class="tab">
+                <h2>Progress</h2>
+                <i class="material-icons">expand_less</i>
+            </div>
+            <div class="content">
                 <div id="progress-bar"><div></div><p>5 / 10</p></div>
                 <h3 id="target-bounties">Target Bounties: 0 cr</h3>
                 <h3 id="non-target-bounties">Non-Target Bounties: 0 cr</h3>
                 <h3 id="total-bounties">Total Bounties: 0 cr</h3>
             </div>
-        </div>
-        <div id="timer">
-            <h2>Timer</h2>
-            <div>
+        </section>
+
+        <section id="timer">
+            <div class="tab">
+                <h2>Timer</h2>
+                <i class="material-icons">expand_less</i>
+            </div>
+            <div class="content">
                 <div id="timerText">00:00:00</div>
                 <div id="timerButtons">
                     <button id="timerStart">Start</button>
@@ -40,6 +55,6 @@
                     <button id="timerReset">Reset</button>
                 </div>
             </div>
-        </div>
+        </section>
     </body>
 </html>
