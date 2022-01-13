@@ -137,6 +137,18 @@ for (let i = 0; i < tabs.length; i++) {
   }
 }
 
+// Alert Overlay
+
+var alertOverlay = document.getElementById("alert");
+alertOverlay.getElementsByTagName("button")[0].onclick = function () {
+  alertOverlay.style.display = "none";
+}
+
+function showAlert() {
+  alertOverlay.style.display = "block";
+}
+eel.expose(showAlert);
+
 
 // Page Load
 

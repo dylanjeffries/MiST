@@ -1,6 +1,8 @@
 import eel
 import json
 import yaml
+import math
+import time
 import queue as q
 from watchdog.observers import Observer
 from listener import Listener
@@ -16,6 +18,9 @@ def start():
     # Load Data
     data = load_data()
     eel.update(data)
+
+    # Mission Board Refresh Alert
+    next_mbr_alert_time = get_next_round_ten_minutes()
     
     # Listen for new messages
     messages = q.Queue()
@@ -25,6 +30,13 @@ def start():
 
     # Process Loop
     while True:
+        # Mission Board Refresh Alert
+        if time.time() >= next_mbr_alert_time:
+            next_mbr_alert_time = get_next_round_ten_minutes()
+            if data["player"]["station"] != "":
+                eel.showAlert()
+
+        # Message Processing
         if not messages.empty():
             while not messages.empty():
                 process_message(messages.get(), data)
@@ -167,3 +179,9 @@ def set_highest_kills(data):
         data["factions_missions"][highest_faction]["is_highest_kills"] = True
         # Set the player required kills to the found highest kills
         data["player"]["required_kills"] = highest_kills
+
+
+# Time
+
+def get_next_round_ten_minutes():
+    return math.ceil( time.time() / 600 ) * 600
