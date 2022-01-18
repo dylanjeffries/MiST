@@ -1,90 +1,155 @@
-function callPython() {
-  eel.hello()
-}
+// Data Update
 
-function addText(text) {
-  var div = document.getElementById("content");
-  div.innerHTML += "<br>" + text;
-}
-eel.expose(addText);
+function update(data) {
+  // Keep track of total mission rewards
+  var totalReward = 0;
 
-function updateMissions(missions) {
   // Get the div for the missions by faction and empty the div
-  var all_missions = document.getElementById("missions-cards");
-  all_missions.innerHTML = "";
+  var missionsTables = document.getElementById("missions-tables");
+  missionsTables.innerHTML = "";
+  var div = document.createElement("div");
 
   // For every mission providing faction and their missions
-  for (const [key, value] of Object.entries(missions)) {
-
-      div = document.createElement("div");
+  for (const [faction_name, faction_info] of Object.entries(data["factions_missions"])) {
 
       // Create table for individual missions and set title to faction name
-      table = document.createElement("table");
-      title = table.insertRow().insertCell();
-      title.innerHTML = key;
-      title.colSpan = 2;
+      var table = document.createElement("table");
+      var titleCell = table.insertRow().insertCell();
+      titleCell.innerHTML = faction_name;
+      titleCell.colSpan = 2;
 
       // Create row for column names
-      colnames = table.insertRow();
-      colnames.insertCell().innerHTML = "Kills";
-      colnames.insertCell().innerHTML = "Credits";
+      var colnamesRow = table.insertRow();
+      colnamesRow.insertCell().innerHTML = "Kills";
+      colnamesRow.insertCell().innerHTML = "Reward";
       
       // For every mission from the current faction, create a row
-      value["missions"].forEach(faction_mission => {
-          row = table.insertRow();
-          row.insertCell().innerHTML = faction_mission["KillCount"];
-          row.insertCell().innerHTML = faction_mission["Reward"].toLocaleString("en-us");
-      });
-
-      div.appendChild(table);
-
-      // Create a new table containing the total values from the rows of each column
-      table = document.createElement("table");
-      row = table.insertRow();
-      row.insertCell().innerHTML = value["total_kills"];
-      row.insertCell().innerHTML = value["total_credits"].toLocaleString("en-us");
-      if (value["is_highest_kills"]) {
-          row.id = "highest-kills";
+      for (const [mission_id, mission_info] of Object.entries(faction_info["missions"])) {
+          var row = table.insertRow();
+          row.insertCell().innerHTML = mission_info["kills"];
+          row.insertCell().innerHTML = mission_info["reward"].toLocaleString("en-us");
+          if (mission_info["is_complete"]) {
+            row.classList.add("lightgreen");
+          }
+          totalReward += mission_info["reward"]
       }
 
       div.appendChild(table);
 
-      all_missions.appendChild(div);
+      // Create a new table containing the sum values from the rows of each column
+      var table = document.createElement("table");
+      table.classList.add("row-2");
+      var row = table.insertRow();
+      var highestDiff = faction_info["total_kills"] - data["player"]["required_kills"]
+      row.insertCell().innerHTML = `${faction_info["total_kills"]} kills ${(highestDiff === 0) ? "" : `(${highestDiff})`}`;
+      // row.insertCell().innerHTML = faction_info["total_reward"].toLocaleString("en-us");
+      if (faction_info["is_highest_kills"]) {
+        row.classList.add("yellow");
+      }
+
+      div.appendChild(table);
+  }
+
+  // Add div with all tables to missions-tables
+  missionsTables.appendChild(div);
+
+  // Set Reward Total
+  var totalRewardHeading = document.getElementById("rewards-total");
+  totalRewardHeading.innerHTML = `Rewards Total: ${totalReward.toLocaleString("en-us")} cr`;
+
+  // Progress Bar
+  var barContainer = document.getElementById("progress-bar");
+  var bar = barContainer.getElementsByTagName("div")[0];
+  var label = barContainer.getElementsByTagName("p")[0];
+  var barRatio = data["player"]["target_kills"] / data["player"]["required_kills"];
+  bar.style.width = `${barRatio * 100}%`;
+  label.innerHTML = `${data["player"]["target_kills"]} / ${data["player"]["required_kills"]}`;
+
+  // Bounty Rewards
+  var targetBounties = document.getElementById("target-bounties");
+  targetBounties.innerHTML = `Target Bounties: ${data["player"]["target_total_reward"].toLocaleString("en-us")} cr`;
+  var nonTargetBounties = document.getElementById("non-target-bounties");
+  nonTargetBounties.innerHTML = `Non-Target Bounties: ${data["player"]["non_target_total_reward"].toLocaleString("en-us")} cr`;
+  var totalBounties = document.getElementById("total-bounties");
+  var totalBountiesValue = data["player"]["target_total_reward"] + data["player"]["non_target_total_reward"];
+  totalBounties.innerHTML = `Total Bounties: ${totalBountiesValue.toLocaleString("en-us")} cr`;
+}
+eel.expose(update);
+
+// Clock
+
+function updateClock() {
+  var now = new Date();
+  var time = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+  document.getElementById("time").innerHTML = time;
+  setTimeout(updateClock, 1000); 
+}
+
+
+// Timer
+
+var timer = new easytimer.Timer();
+var timerHoursMode = false;
+
+function updateTimer() {
+  if (timerHoursMode) {
+      document.getElementById("timerText").innerHTML = `${(timer.getTotalTimeValues().seconds / 3600).toFixed(3)} hours`;
+  } else {
+      document.getElementById("timerText").innerHTML = timer.getTimeValues().toString();
   }
 }
-eel.expose(updateMissions);
 
-function updateProgress(progress) {
-  // Get the div for progress and empty it
-  var progress_div = document.getElementById("progress-content");
-  progress_div.innerHTML = "";
+timer.addEventListener('secondsUpdated', function () {
+  updateTimer();
+});
+timer.addEventListener('started', function () {
+  updateTimer();
+});
+timer.addEventListener('reset', function () {
+  updateTimer();
+});
 
-  // Progress bar
-  bar = document.createElement("div");
-  bar.id = "progress-bar"
-  bar_actual = document.createElement("div");
-  bar_actual.style.width = ((progress["target_kills"] / progress["required_kills"]) * 100) + "%";
-  bar.appendChild(bar_actual);
-  bar_label = document.createElement("p");
-  bar_label.innerHTML = progress["target_kills"] + " / " + progress["required_kills"];
-  bar.appendChild(bar_label);
-  progress_div.appendChild(bar);
+document.getElementById("timerStart").onclick = function () {
+  timer.start();
+};
 
-  // Bounty rewards
-  target_bounties = document.createElement("h3");
-  target_bounties.innerHTML = "Target Bounties: " + progress["target_total_reward"].toLocaleString("en-us") + " cr";
-  progress_div.appendChild(target_bounties);
+document.getElementById("timerPause").onclick = function () {
+  timer.pause();
+};
 
-  non_target_bounties = document.createElement("h3");
-  non_target_bounties.innerHTML = "Non-Target Bounties: " + progress["non_target_total_reward"].toLocaleString("en-us") + " cr";
-  progress_div.appendChild(non_target_bounties);
+document.getElementById("timerReset").onclick = function () {
+  timer.reset();
+  timer.stop();
+};
 
-  total_bounties = document.createElement("h3")
-  total_bounties_value = progress["non_target_total_reward"] + progress["target_total_reward"];
-  total_bounties.innerHTML = "Total Bounties: " + total_bounties_value.toLocaleString("en-us") + " cr";
-  progress_div.appendChild(total_bounties)
+document.getElementById("timerText").onclick = function () {
+  timerHoursMode = !timerHoursMode;
+  updateTimer();
 }
-eel.expose(updateProgress);
 
-// Page load
-eel.load();
+// Collapsible Sections
+ 
+var tabs = document.getElementsByClassName("tab");
+for (let i = 0; i < tabs.length; i++) {
+  tabs[i].onclick = function () {
+    var is_collapsed = this.nextElementSibling.classList.toggle("collapsed");
+    this.lastElementChild.innerHTML = is_collapsed ? "expand_more" : "expand_less";
+  }
+}
+
+// Alert Overlay
+
+var alertOverlay = document.getElementById("alert");
+alertOverlay.getElementsByTagName("button")[0].onclick = function () {
+  alertOverlay.style.display = "none";
+}
+
+function showAlert() {
+  alertOverlay.style.display = "block";
+}
+eel.expose(showAlert);
+
+
+// Page Load
+
+eel.reload();

@@ -1,10 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+/* Whole Document */
 
 body {
     margin: 0;
     background-color: #001E29;
-    font-family: roboto;
+    font-family: Roboto;
     color: #F8F8FF;
+}
+
+::-webkit-scrollbar {
+    height: 0.7em;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #606060;
+    border-radius: 0.7em;
+}
+
+@-moz-document url-prefix() {
+    #missions-tables {
+        scrollbar-color: #606060 transparent;
+        scrollbar-width: thin;
+    }
 }
 
 /* Header and Menu */
@@ -45,46 +65,128 @@ header div {
     margin: 0 auto 0.6em auto;
 }
 
-/*  */
+/* Overlay */
 
-body > div {
-    background-color: #70D9FF;
-    overflow: auto;
+#alert {
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #000000c4;
+    z-index: 2;
+    cursor: pointer;
 }
 
-body div h2 {
+#alert div {
     background-color: #0087B8;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#alert h2 {
+    padding: 1rem;
+}
+
+#alert button {
+    width: 100%;
+    background-color: #004B66;
+    color: white;
+    border: none;
+    font-family: inherit;
+    font-size: x-large;
+    padding: 0.5rem;
+}
+
+#alert button:hover {
+    background-color: #026588;
+}
+
+/* Sections and Content */
+
+section {
+    background-color: #70D9FF;
+    overflow: hidden;
+}
+
+.tab {
+    background-color: #0087B8;
+    padding: 0.7em;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+
+.tab h2 {
     margin: 0;
-    padding: 0.3em;
 }
 
-#missions-cards div {
-    float: left;
-    margin: 1em;
+.tab i {
+    font-size: xx-large;
 }
 
-#missions-cards table {
-    text-align: center;
-    border-collapse: collapse;
+.content {
+    padding: 2em;
+    transition: max-height 0.2s ease-out;
+}
+
+.collapsed {
+    display: none;
+}
+
+
+/* Missions */
+
+#missions h3 {
+    color: black;
+    margin-top: 0;
+}
+
+#missions-tables {
+    overflow-x: scroll;
+}
+
+#missions-tables div {
+    display: grid;
+    gap: 1em 2em;
+    overflow: auto;
+    white-space: nowrap;
+    width: fit-content;
+}
+
+#missions-tables table {
     background-color: #F8F8FF;
     color: black;
-    width: 100%;
-    margin-bottom: 1em;
+    text-align: center;
+    border-collapse: collapse;
+    height: min-content;
 }
 
-#missions-cards td {
-    width: 50%;
+#missions-tables td {
     border: 2px solid black;
     padding: 0.4em;
 }
 
-#highest-kills {
+.row-2 {
+    grid-row: 2;
+}
+
+.lightgreen {
+    background-color: lightgreen;
+}
+
+.yellow {
     background-color: yellow;
 }
 
-#progress-content {
-    padding: 2em;
-}
+/* Progress */
 
 #progress-bar {
     border: 5px solid black;
@@ -111,6 +213,61 @@ body div h2 {
     grid-row: 1;
 }
 
-#progress-content h3 {
+#progress h3 {
     color: black;
+}
+
+
+/* Timer */
+
+#timer .content {
+    text-align: center;
+}
+
+#timerText {
+    color: black;
+    font-size: xx-large;
+    border: 4px solid black;
+    width: fit-content;
+    margin: auto;
+    background-color: #F8F8FF;
+    padding: 0.4em;
+    cursor: pointer;
+}
+
+#timerButtons {
+    margin-top: 1em;
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+}
+
+#timerButtons button:hover {
+    text-decoration: underline;
+}
+
+#timerButtons button:active {
+    text-decoration: underline;
+    transform: translateY(4px);
+}
+
+#timerButtons button {
+    font-family: inherit;
+    font-size: x-large;
+    border: 0;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    cursor: pointer;
+}
+
+#timerStart {
+    background-color: #30b630;
+}
+
+#timerPause {
+    background-color: #FFCA2C;
+}
+
+#timerReset {
+    background-color: #DC3545;
 }

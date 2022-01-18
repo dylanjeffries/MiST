@@ -1,0 +1,29 @@
+data: {
+	factions_missions: {
+		(faction name): {
+			name: STRING,
+			missions: {
+				(mission id): {
+					kills: INTEGER,
+					reward: INTEGER,
+					target: STRING,
+					origin: STRING,
+					is_complete: BOOLEAN
+				},
+				...
+			},
+			total_kills: INTEGER,
+			total_reward: INTEGER,
+			is_highest_kills: BOOLEAN
+		},
+		...
+	},
+	player: {
+		station: STRING,
+		required_kills: INTEGER,
+		target_kills: INTEGER,
+		non_target_kills: INTEGER,
+		target_total_reward: INTEGER,
+		non_target_total_reward: INTEGER
+	}
+}
