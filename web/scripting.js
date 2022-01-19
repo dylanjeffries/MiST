@@ -149,7 +149,19 @@ function showAlert() {
 }
 eel.expose(showAlert);
 
+// Menu
+
+function menuButtonClick(event) {
+  event.stopPropagation();
+  document.getElementById("menuContent").classList.toggle("menuShow");
+}
+
+window.onclick = function(event) {
+  if (!event.target.matches('#menuButton')) {
+    document.getElementById("menuContent").classList.remove('menuShow');
+  }
+}
+
 
 // Page Load
-
 eel.reload();

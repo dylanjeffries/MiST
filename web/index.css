@@ -1,10 +1,14 @@
 /* Whole Document */
 
+:root {
+    --off-white: #F8F8FF;
+}
+
 body {
     margin: 0;
     background-color: #001E29;
     font-family: Roboto;
-    color: #F8F8FF;
+    color: var(--off-white);
 }
 
 ::-webkit-scrollbar {
@@ -27,21 +31,70 @@ body {
     }
 }
 
-/* Header and Menu */
+/* Header */
 
 header {
-    text-align: center;
     background-color: #004B66;
-    padding: 0.1em;
+    display: flex;
+    overflow: hidden;
+}
+
+header div {
+    flex: 1;
+    padding: 0 1em 0 1em;
+    text-align: center;
+    margin: auto;
+}
+
+header div:first-child {
+    text-align: left;
+}
+  
+header div:last-child {
+    text-align: right;
 }
 
 header h1 {
-    letter-spacing: 0.5ch;
-    margin: 0.3em auto 0.1em 0;
+    margin: 0;
 }
 
-header p {
-    margin: 0 auto 0.6em auto;
+/* Menu */
+  
+#menuButton {
+    cursor: pointer;
+    color: var(--off-white);
+    border: none;
+    background-color: transparent;
+}
+
+#menuButton i {
+    font-size: 2.5em;
+}
+
+#menuContent {
+    display: none;
+    position: absolute;
+    background-color: #00698F;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+#menuContent a {
+    float: none;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+#menuContent a:hover {
+    background-color: #ddd;
+}
+
+.menuShow {
+    display: block !important;
 }
 
 /* Overlay */
@@ -78,7 +131,7 @@ header p {
     color: white;
     border: none;
     font-family: inherit;
-    font-size: x-large;
+    font-size: 1.5em;
     padding: 0.5rem;
 }
 
@@ -108,7 +161,7 @@ section {
 }
 
 .tab i {
-    font-size: xx-large;
+    font-size: 2em;
 }
 
 .content {
@@ -141,7 +194,7 @@ section {
 }
 
 #missions-tables table {
-    background-color: #F8F8FF;
+    background-color: var(--off-white);
     color: black;
     text-align: center;
     border-collapse: collapse;
@@ -170,12 +223,12 @@ section {
 #progress-bar {
     border: 5px solid black;
     height: 3em;
-    background-color: #F8F8FF;
+    background-color: var(--off-white);
     display: grid;
 }
 
 #progress-bar p {
-    font-size: 1.6em;
+    font-size: 1.5em;
     grid-column: 1;
     grid-row: 1;
     color: black;
@@ -205,11 +258,11 @@ section {
 
 #timerText {
     color: black;
-    font-size: xx-large;
+    font-size: 2.5em;
     border: 4px solid black;
     width: fit-content;
     margin: auto;
-    background-color: #F8F8FF;
+    background-color: var(--off-white);
     padding: 0.4em;
     cursor: pointer;
 }
@@ -232,7 +285,7 @@ section {
 
 #timerButtons button {
     font-family: inherit;
-    font-size: x-large;
+    font-size: 1.5em;
     border: 0;
     border-radius: 0.5em;
     padding: 0.5em;
