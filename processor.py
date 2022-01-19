@@ -1,3 +1,4 @@
+from configparser import ConfigParser
 import eel
 import json
 import yaml
@@ -10,19 +11,17 @@ from listener import Listener
 
 # Start
 
-def start():
-    # Load Config
-    with open("config.yaml", "r") as f:
-        config = yaml.load(f, Loader=yaml.FullLoader)
-
-    # Load Data
+def start(pipe):
+    # Load Config and Data Files
+    config = load_config()
     data = load_data()
-    eel.update(data)
+    eel.updateData(data)
+    eel.updateConfig(config)
 
-    # Mission Board Refresh Alert
+    # Start the Mission Board Refresh Alert
     next_mbr_alert_time = get_next_round_ten_minutes()
     
-    # Listen for new messages
+    # Establish the Journal Listener with a queue to pass through new messages
     messages = q.Queue()
     observer = Observer()
     observer.schedule(Listener(messages), path=config["data-path"], recursive=False)
@@ -33,7 +32,7 @@ def start():
         # Mission Board Refresh Alert
         if time.time() >= next_mbr_alert_time:
             next_mbr_alert_time = get_next_round_ten_minutes()
-            if data["player"]["station"] != "":
+            if data["player"]["station"] != "" and config["refresh-alert"]:
                 eel.showAlert()
 
         # Message Processing
@@ -42,17 +41,25 @@ def start():
                 process_message(messages.get(), data)
 
             save_data(data)
-            eel.update(data)
+            eel.updateData(data)
 
+        # Front-end Pipe Processing
+        while not pipe.empty():
+            id, args = pipe.get()
+            if id == "REFRESH_ALERT_TOGGLE":
+                config["refresh-alert"] = not config["refresh-alert"]
+                save_config(config)
+                eel.updateConfig(config)
+        
         eel.sleep(1)
 
 
-# Data
+# Loading and Saving
 
 def load_data():
     try:
         with open("data.json", "r") as f:
-            return json.loads(f.read())
+            return json.load(f)
     except FileNotFoundError as e:
         return {"factions_missions": {},
                 "player": {"station": "", "required_kills": 0, "target_kills": 0, "non_target_kills": 0,
@@ -64,12 +71,27 @@ def save_data(data):
     with open("data.json", "w") as f:
         json.dump(data, f)
 
+    
+def load_config():
+    template = {"data-path": "", "refresh-alert": True}
+    try:
+        with open("config.yaml", "r") as f:
+            return template | yaml.load(f, Loader=yaml.FullLoader)
+    except FileNotFoundError as e:
+        return template
+
+
+def save_config(config):
+    with open("config.yaml", "w") as f:
+        yaml.dump(config, f)
+
 
 # Front-end
 
 @eel.expose
 def reload():
-    eel.update(load_data())
+    eel.updateData(load_data())
+    eel.updateConfig(load_config())
 
 
 # Process Messages

@@ -1,6 +1,6 @@
-// Data Update
+// Update Data
 
-function update(data) {
+function updateData(data) {
   // Keep track of total mission rewards
   var totalReward = 0;
 
@@ -74,7 +74,16 @@ function update(data) {
   var totalBountiesValue = data["player"]["target_total_reward"] + data["player"]["non_target_total_reward"];
   totalBounties.innerHTML = `Total Bounties: ${totalBountiesValue.toLocaleString("en-us")} cr`;
 }
-eel.expose(update);
+eel.expose(updateData);
+
+// Update Config
+
+function updateConfig(config) {
+  var refreshAlertState = config["refresh-alert"] ? "(ON)" : "(OFF)";
+  document.getElementById("refreshAlertToggle").innerHTML = `Toggle Refresh Alert ${refreshAlertState}`;
+}
+eel.expose(updateConfig);
+
 
 // Clock
 
@@ -83,6 +92,21 @@ function updateClock() {
   var time = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
   document.getElementById("time").innerHTML = time;
   setTimeout(updateClock, 1000); 
+}
+
+
+// Menu
+
+function menuButtonClick(event) {
+  event.stopPropagation();
+  document.getElementById("menuContent").classList.toggle("menuShow");
+}
+
+var menu = document.getElementById("menu");
+window.onclick = function(event) {
+  if (!menu.contains(event.target)) {
+    document.getElementById("menuContent").classList.remove('menuShow');
+  }
 }
 
 
@@ -137,7 +161,11 @@ for (let i = 0; i < tabs.length; i++) {
   }
 }
 
-// Alert Overlay
+// Mission Board Refresh Alert
+
+document.getElementById("refreshAlertToggle").onclick = function () {
+  eel.pipe_put("REFRESH_ALERT_TOGGLE");
+}
 
 var alertOverlay = document.getElementById("alert");
 alertOverlay.getElementsByTagName("button")[0].onclick = function () {
@@ -148,19 +176,6 @@ function showAlert() {
   alertOverlay.style.display = "block";
 }
 eel.expose(showAlert);
-
-// Menu
-
-function menuButtonClick(event) {
-  event.stopPropagation();
-  document.getElementById("menuContent").classList.toggle("menuShow");
-}
-
-window.onclick = function(event) {
-  if (!event.target.matches('#menuButton')) {
-    document.getElementById("menuContent").classList.remove('menuShow');
-  }
-}
 
 
 // Page Load

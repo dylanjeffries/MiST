@@ -39,18 +39,18 @@ header {
     overflow: hidden;
 }
 
-header div {
+header > div {
     flex: 1;
     padding: 0 1em 0 1em;
     text-align: center;
     margin: auto;
 }
 
-header div:first-child {
+header > div:first-child {
     text-align: left;
 }
   
-header div:last-child {
+header > div:last-child {
     text-align: right;
 }
 
@@ -73,28 +73,28 @@ header h1 {
 
 #menuContent {
     display: none;
+    cursor: pointer;
     position: absolute;
     background-color: #00698F;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 2em 2em 0px rgba(0,0,0,0.2);
     z-index: 1;
 }
 
 #menuContent a {
-    float: none;
-    color: black;
-    padding: 12px 16px;
+    flex: 1;
+    color: white;
+    padding: 1em;
     text-decoration: none;
-    display: block;
     text-align: left;
 }
 
 #menuContent a:hover {
-    background-color: #ddd;
+    background-color: #001E29;
 }
 
 .menuShow {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column;
 }
 
 /* Overlay */
