@@ -6,6 +6,8 @@ import math
 import time
 import queue as q
 from watchdog.observers import Observer
+from tkinter import *
+from tkinter import filedialog
 from listener import Listener
 
 
@@ -24,7 +26,7 @@ def start(pipe):
     # Establish the Journal Listener with a queue to pass through new messages
     messages = q.Queue()
     observer = Observer()
-    observer.schedule(Listener(messages), path=config["data-path"], recursive=False)
+    observer.schedule(Listener(messages, config["data-path"]), path=config["data-path"], recursive=False)
     observer.start()
 
     # Process Loop
@@ -50,6 +52,16 @@ def start(pipe):
                 config["refresh-alert"] = not config["refresh-alert"]
                 save_config(config)
                 eel.updateConfig(config)
+            elif id == "SELECT_DATA_PATH":
+                Tk().withdraw()
+                dir = filedialog.askdirectory()
+                
+                config["data-path"] = dir
+                save_config(config)
+
+                observer.unschedule_all()
+                observer.schedule(Listener(messages, config["data-path"]), path=config["data-path"], recursive=False)
+
         
         eel.sleep(1)
 

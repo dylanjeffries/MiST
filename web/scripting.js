@@ -110,6 +110,30 @@ window.onclick = function(event) {
 }
 
 
+// Select Data Path
+
+document.getElementById("dataPathInput").onclick = function () {
+  eel.pipe_put("SELECT_DATA_PATH");
+}
+
+
+// Mission Board Refresh Alert
+
+document.getElementById("refreshAlertToggle").onclick = function () {
+  eel.pipe_put("REFRESH_ALERT_TOGGLE");
+}
+
+var alertOverlay = document.getElementById("alert");
+alertOverlay.getElementsByTagName("button")[0].onclick = function () {
+  alertOverlay.style.display = "none";
+}
+
+function showAlert() {
+  alertOverlay.style.display = "block";
+}
+eel.expose(showAlert);
+
+
 // Timer
 
 var timer = new easytimer.Timer();
@@ -160,22 +184,6 @@ for (let i = 0; i < tabs.length; i++) {
     this.lastElementChild.innerHTML = is_collapsed ? "expand_more" : "expand_less";
   }
 }
-
-// Mission Board Refresh Alert
-
-document.getElementById("refreshAlertToggle").onclick = function () {
-  eel.pipe_put("REFRESH_ALERT_TOGGLE");
-}
-
-var alertOverlay = document.getElementById("alert");
-alertOverlay.getElementsByTagName("button")[0].onclick = function () {
-  alertOverlay.style.display = "none";
-}
-
-function showAlert() {
-  alertOverlay.style.display = "block";
-}
-eel.expose(showAlert);
 
 
 // Page Load

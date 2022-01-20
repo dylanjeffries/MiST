@@ -59,8 +59,13 @@ header h1 {
 }
 
 /* Menu */
+
+#menu {
+    margin: 0 auto;
+}
   
 #menuButton {
+    height: 100%;
     cursor: pointer;
     color: var(--off-white);
     border: none;
@@ -80,7 +85,7 @@ header h1 {
     z-index: 1;
 }
 
-#menuContent a {
+#menuContent label {
     flex: 1;
     color: white;
     padding: 1em;
@@ -88,7 +93,7 @@ header h1 {
     text-align: left;
 }
 
-#menuContent a:hover {
+#menuContent label:hover {
     background-color: #001E29;
 }
 
