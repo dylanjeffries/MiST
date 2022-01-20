@@ -169,12 +169,17 @@ section {
     font-size: 2em;
 }
 
+.tab-extra {
+    flex-grow: 1;
+    padding-left: 0.3em;
+}
+
 .content {
     padding: 2em;
     transition: max-height 0.2s ease-out;
 }
 
-.collapsed {
+.hide {
     display: none;
 }
 

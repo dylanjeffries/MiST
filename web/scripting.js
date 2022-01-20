@@ -1,7 +1,8 @@
 // Update Data
 
 function updateData(data) {
-  // Keep track of total mission rewards
+  // Tracking variables through the missions
+  var missionsCount = 0;
   var totalReward = 0;
 
   // Get the div for the missions by faction and empty the div
@@ -31,6 +32,7 @@ function updateData(data) {
           if (mission_info["is_complete"]) {
             row.classList.add("lightgreen");
           }
+          missionsCount += 1;
           totalReward += mission_info["reward"]
       }
 
@@ -57,11 +59,17 @@ function updateData(data) {
   var totalRewardHeading = document.getElementById("rewards-total");
   totalRewardHeading.innerHTML = `Rewards Total: ${totalReward.toLocaleString("en-us")} cr`;
 
+  // Set Missions Bar Extra
+  var missionsExtra = document.getElementById("missions").getElementsByClassName("tab-extra")[0];
+  missionsExtra.innerHTML = `- ${missionsCount}`;
+
   // Progress Bar
+  var progressExtra = document.getElementById("progress").getElementsByClassName("tab-extra")[0];
   var barContainer = document.getElementById("progress-bar");
   var bar = barContainer.getElementsByTagName("div")[0];
   var label = barContainer.getElementsByTagName("p")[0];
   var barRatio = data["player"]["target_kills"] / data["player"]["required_kills"];
+  progressExtra.innerHTML = `- ${(barRatio * 100).toFixed(1)}%`;
   bar.style.width = `${barRatio * 100}%`;
   label.innerHTML = `${data["player"]["target_kills"]} / ${data["player"]["required_kills"]}`;
 
@@ -138,13 +146,13 @@ eel.expose(showAlert);
 
 var timer = new easytimer.Timer();
 var timerHoursMode = false;
+var timerExtra = document.getElementById("timer").getElementsByClassName("tab-extra")[0];
 
 function updateTimer() {
-  if (timerHoursMode) {
-      document.getElementById("timerText").innerHTML = `${(timer.getTotalTimeValues().seconds / 3600).toFixed(3)} hours`;
-  } else {
-      document.getElementById("timerText").innerHTML = timer.getTimeValues().toString();
-  }
+  var timerText = timer.getTimeValues().toString();
+  var timerTextHours = (timer.getTotalTimeValues().seconds / 3600).toFixed(3);
+  timerExtra.innerHTML = `- ${timerText}`;
+  document.getElementById("timerText").innerHTML = timerHoursMode ? timerTextHours : timerText;
 }
 
 timer.addEventListener('secondsUpdated', function () {
@@ -180,7 +188,10 @@ document.getElementById("timerText").onclick = function () {
 var tabs = document.getElementsByClassName("tab");
 for (let i = 0; i < tabs.length; i++) {
   tabs[i].onclick = function () {
-    var is_collapsed = this.nextElementSibling.classList.toggle("collapsed");
+    for (let extra of this.getElementsByClassName("tab-extra")) {
+      extra.classList.toggle("hide");
+    }
+    var is_collapsed = this.nextElementSibling.classList.toggle("hide");
     this.lastElementChild.innerHTML = is_collapsed ? "expand_more" : "expand_less";
   }
 }
