@@ -20,8 +20,7 @@ class Listener(FileSystemEventHandler):
     def on_modified(self, event):
         if event.src_path.endswith(".log"):
             self.read_new_lines(event.src_path)
-            print(self.pointers)
-
+            
     def read_new_lines(self, file):
         self.pointers.setdefault(file, 0)
         with open(file, "r") as f:

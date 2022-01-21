@@ -83,8 +83,9 @@ function updateData(data) {
   var bar = barContainer.getElementsByTagName("div")[0];
   var label = barContainer.getElementsByTagName("p")[0];
   var barRatio = data["player"]["target_kills"] / data["player"]["required_kills"];
-  progressExtra.innerHTML = `- ${(barRatio * 100).toFixed(1)}%`;
-  bar.style.width = `${barRatio * 100}%`;
+  var barPct = Math.min((barRatio * 100).toFixed(1), 100);
+  progressExtra.textContent = `- ${barPct}%`;
+  bar.style.width = `${barPct}%`;
   label.innerHTML = `${data["player"]["target_kills"]} / ${data["player"]["required_kills"]}`;
 
   // Kills and Bounties
@@ -160,6 +161,13 @@ function showAlert() {
   alertOverlay.style.display = "block";
 }
 eel.expose(showAlert);
+
+
+// Reset Saved Data
+
+document.getElementById("resetSavedData").onclick = function () {
+  eel.pipe_put("RESET_SAVED_DATA");
+}
 
 
 // Timer

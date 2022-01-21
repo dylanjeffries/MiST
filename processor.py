@@ -4,11 +4,17 @@ import json
 import yaml
 import math
 import time
+import copy
 import queue as q
 from watchdog.observers import Observer
 from tkinter import *
 from tkinter import filedialog
 from listener import Listener
+
+
+data_template = {"factions_missions": {},
+                "player": {"station": "", "required_kills": 0, "target_kills": 0, "non_target_kills": 0,
+                            "target_total_reward": 0, "non_target_total_reward": 0}}
 
 
 # Start
@@ -61,7 +67,10 @@ def start(pipe):
 
                 observer.unschedule_all()
                 observer.schedule(Listener(messages, config["data-path"]), path=config["data-path"], recursive=False)
-
+            elif id == "RESET_SAVED_DATA":
+                data = copy.deepcopy(data_template)
+                save_data(data)
+                eel.updateData(data)
         
         eel.sleep(1)
 
@@ -73,10 +82,7 @@ def load_data():
         with open("data.json", "r") as f:
             return json.load(f)
     except FileNotFoundError as e:
-        return {"factions_missions": {},
-                "player": {"station": "", "required_kills": 0, "target_kills": 0, "non_target_kills": 0,
-                            "target_total_reward": 0, "non_target_total_reward": 0}
-        }
+        return copy.deepcopy(data_template)
 
 
 def save_data(data):
