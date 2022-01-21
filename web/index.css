@@ -144,6 +144,26 @@ header h1 {
     background-color: #026588;
 }
 
+/* Info Grids */
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 33% 33%;
+    column-gap: 11%;
+    row-gap: 2em;
+    justify-content: center;
+}
+
+.info-grid h3 {
+    background-color: #F8F8FF;
+    color: black;
+    border: 2px solid black;
+    padding: 0.5em 0;
+    margin: auto;
+    text-align: center;
+    width: 100%;
+}
+
 /* Sections and Content */
 
 section {
@@ -180,7 +200,7 @@ section {
 }
 
 .hide {
-    display: none;
+    display: none !important;
 }
 
 
@@ -192,6 +212,7 @@ section {
 }
 
 #missions-tables {
+    margin-top: 2em;
     overflow-x: scroll;
 }
 
@@ -258,7 +279,6 @@ section {
 #progress h3 {
     color: black;
 }
-
 
 /* Timer */
 

@@ -1,3 +1,9 @@
+function newTextElement(tag, text) {
+  var element = document.createElement(tag);
+  element.textContent = text;
+  return element;
+}
+
 // Update Data
 
 function updateData(data) {
@@ -6,9 +12,9 @@ function updateData(data) {
   var totalReward = 0;
 
   // Get the div for the missions by faction and empty the div
-  var missionsTables = document.getElementById("missions-tables");
-  missionsTables.innerHTML = "";
-  var div = document.createElement("div");
+  var missionsTables = document.createElement("div");
+  missionsTables.id = "missions-tables";
+  var innerDiv = document.createElement("div");
 
   // For every mission providing faction and their missions
   for (const [faction_name, faction_info] of Object.entries(data["factions_missions"])) {
@@ -36,7 +42,7 @@ function updateData(data) {
           totalReward += mission_info["reward"]
       }
 
-      div.appendChild(table);
+      innerDiv.appendChild(table);
 
       // Create a new table containing the sum values from the rows of each column
       var table = document.createElement("table");
@@ -49,21 +55,29 @@ function updateData(data) {
         row.classList.add("yellow");
       }
 
-      div.appendChild(table);
+      innerDiv.appendChild(table);
   }
 
   // Add div with all tables to missions-tables
-  missionsTables.appendChild(div);
+  missionsTables.appendChild(innerDiv);
 
-  // Set Reward Total
-  var totalRewardHeading = document.getElementById("rewards-total");
-  totalRewardHeading.innerHTML = `Rewards Total: ${totalReward.toLocaleString("en-us")} cr`;
+  // Missions Info
+  var rewardPerKill = Math.round(totalReward / data["player"]["required_kills"]);
+  var missionsInfo = document.createElement("div");
+  missionsInfo.classList.add("info-grid");
+  var totalRewardElement = newTextElement("h3", `Total Reward: ${totalReward.toLocaleString("en-us")} cr`);
+  var rewardPerKillElement = newTextElement("h3", `Reward per Kill: ${rewardPerKill.toLocaleString("en-us")} cr`);
+  missionsInfo.replaceChildren(...[totalRewardElement, rewardPerKillElement]);
+  
+  // Assemble Missions Content
+  var [missionsContent] = document.getElementById("missions").getElementsByClassName("content");
+  missionsContent.replaceChildren(...[missionsInfo, missionsTables]);
 
   // Set Missions Bar Extra
-  var missionsExtra = document.getElementById("missions").getElementsByClassName("tab-extra")[0];
-  missionsExtra.innerHTML = `- ${missionsCount}`;
+  var [missionsExtra] = document.getElementById("missions").getElementsByClassName("tab-extra");
+  missionsExtra.textContent = `- ${missionsCount}`;
 
-  // Progress Bar
+  // Progress
   var progressExtra = document.getElementById("progress").getElementsByClassName("tab-extra")[0];
   var barContainer = document.getElementById("progress-bar");
   var bar = barContainer.getElementsByTagName("div")[0];
@@ -73,14 +87,20 @@ function updateData(data) {
   bar.style.width = `${barRatio * 100}%`;
   label.innerHTML = `${data["player"]["target_kills"]} / ${data["player"]["required_kills"]}`;
 
-  // Bounty Rewards
-  var targetBounties = document.getElementById("target-bounties");
-  targetBounties.innerHTML = `Target Bounties: ${data["player"]["target_total_reward"].toLocaleString("en-us")} cr`;
-  var nonTargetBounties = document.getElementById("non-target-bounties");
-  nonTargetBounties.innerHTML = `Non-Target Bounties: ${data["player"]["non_target_total_reward"].toLocaleString("en-us")} cr`;
-  var totalBounties = document.getElementById("total-bounties");
-  var totalBountiesValue = data["player"]["target_total_reward"] + data["player"]["non_target_total_reward"];
-  totalBounties.innerHTML = `Total Bounties: ${totalBountiesValue.toLocaleString("en-us")} cr`;
+  // Kills and Bounties
+  var allKills = data["player"]["target_kills"] + data["player"]["non_target_kills"];
+  var allBounties = data["player"]["target_total_reward"] + data["player"]["non_target_total_reward"];
+  var [killsContent] = document.getElementById("kills").getElementsByClassName("content");
+  killsContent.replaceChildren(...[
+    newTextElement("h3", `Target Kills: ${data["player"]["target_kills"]}`),
+    newTextElement("h3", `Target Bounties: ${data["player"]["target_total_reward"].toLocaleString("en-us")} cr`),
+    newTextElement("h3", `Non-Target Kills: ${data["player"]["non_target_kills"]}`),
+    newTextElement("h3", `Non-Target Bounties: ${data["player"]["non_target_total_reward"].toLocaleString("en-us")} cr`),
+    newTextElement("h3", `All Kills: ${allKills}`),
+    newTextElement("h3", `All Bounties: ${allBounties.toLocaleString("en-us")} cr`)
+  ]);
+  var [killsExtra] = document.getElementById("kills").getElementsByClassName("tab-extra");
+  killsExtra.textContent = `- ${allKills}`;
 }
 eel.expose(updateData);
 
