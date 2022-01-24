@@ -5,6 +5,8 @@ import yaml
 import math
 import time
 import copy
+import os
+import glob
 import queue as q
 from watchdog.observers import Observer
 from tkinter import *
@@ -22,7 +24,7 @@ data_template = {"factions_missions": {},
 def start(pipe):
     # Load Config and Data Files
     config = load_config()
-    data = load_data()
+    data = load_data(config["data-path"])
     eel.updateData(data)
     eel.updateConfig(config)
 
@@ -46,52 +48,47 @@ def start(pipe):
         # Message Processing
         if not messages.empty():
             while not messages.empty():
-                process_message(messages.get(), data)
+                try:
+                    message = json.loads(messages.get())
+                    process_message(message, data)
+                except json.JSONDecodeError as e:
+                    pass
 
-            save_data(data)
             eel.updateData(data)
 
         # Front-end Pipe Processing
         while not pipe.empty():
             id, args = pipe.get()
-            if id == "REFRESH_ALERT_TOGGLE":
+            if id == "UPDATE_ALL":
+                eel.updateData(data)
+                eel.updateConfig(config)
+            elif id == "REFRESH_ALERT_TOGGLE":
                 config["refresh-alert"] = not config["refresh-alert"]
                 save_config(config)
                 eel.updateConfig(config)
             elif id == "SELECT_DATA_PATH":
-                Tk().withdraw()
-                dir = filedialog.askdirectory()
-                
-                config["data-path"] = dir
-                save_config(config)
-
-                observer.unschedule_all()
-                observer.schedule(Listener(messages, config["data-path"]), path=config["data-path"], recursive=False)
+                root = Tk()
+                root.attributes("-topmost", True)
+                root.withdraw()
+                folder = filedialog.askdirectory(parent=root, title="Select Data Path")
+                root.destroy()
+                if folder:
+                    config["data-path"] = folder
+                    save_config(config)
+                    observer.unschedule_all()
+                    observer.schedule(Listener(messages, config["data-path"]), path=config["data-path"], recursive=False)
             elif id == "RESET_SAVED_DATA":
                 data = copy.deepcopy(data_template)
-                save_data(data)
                 eel.updateData(data)
         
         eel.sleep(1)
 
 
-# Loading and Saving
+# Config
 
-def load_data():
-    try:
-        with open("data.json", "r") as f:
-            return json.load(f)
-    except FileNotFoundError as e:
-        return copy.deepcopy(data_template)
-
-
-def save_data(data):
-    with open("data.json", "w") as f:
-        json.dump(data, f)
-
-    
 def load_config():
-    template = {"data-path": "", "refresh-alert": True}
+    current_path = os.getcwd()
+    template = {"data-path": current_path, "refresh-alert": True}
     try:
         with open("config.yaml", "r") as f:
             return template | yaml.load(f, Loader=yaml.FullLoader)
@@ -104,18 +101,74 @@ def save_config(config):
         yaml.dump(config, f)
 
 
-# Front-end
+# Load Data
 
-@eel.expose
-def reload():
-    eel.updateData(load_data())
-    eel.updateConfig(load_config())
+def load_data(path):
+    # Get all journals in chronological order
+    journals = glob.glob(f"{path}/*.log")
+    journals.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+
+    # Get a list of journals that contain events relevant to the missions existing at the start of the latest journal
+    journals_to_process = []
+    existing_missions = set()
+    for j in journals:
+        if does_journal_contain_load_game(j):
+
+            if not journals_to_process:
+                existing_missions = get_existing_missions(j)
+            
+            journals_to_process.append(j)
+            accepted_missions = get_accepted_missions(j)
+            existing_missions.difference_update(accepted_missions)
+
+            if not existing_missions:
+                break
+
+    # Go backwards through the required journals and process their events to get up-to-date data
+    data = copy.deepcopy(data_template)
+    while journals_to_process:
+        journal = journals_to_process.pop(-1)
+        process_journal(journal, data)
+
+    return data
+
+def does_journal_contain_load_game(journal):
+    with open(journal, "r", encoding="utf8") as f:
+        for line in f.readlines():
+            if '"event":"LoadGame"' in line:
+                return True
+    return False
+
+def get_existing_missions(journal):
+    with open(journal, "r", encoding="utf8") as f:
+        for line in f.readlines():
+            if '"event":"Missions"' in line:
+                line = json.loads(line)
+                all_missions = [*line["Active"], *line["Failed"], *line["Complete"]]
+                massacre_missions = {x["MissionID"] for x in all_missions if "Mission_Massacre" in x["Name"]}
+                return massacre_missions
+    return None
+
+def get_accepted_missions(journal):
+    accepted_missions = set()
+    with open(journal, "r", encoding="utf8") as f:
+        for line in f.readlines():
+            if '"event":"MissionAccepted"' in line:
+                accepted_missions.add(json.loads(line)["MissionID"])
+    return accepted_missions
+
+def process_journal(journal, data):
+    with open(journal, "r", encoding="utf8") as f:
+        for line in f.readlines():
+            try:
+                process_message(json.loads(line), data)
+            except json.JSONDecodeError as e:
+                pass
 
 
 # Process Messages
 
-def process_message(message_json, data):
-    message = json.loads(message_json)
+def process_message(message, data):
 
     # Mission Accepted
     if message["event"] == "MissionAccepted":
@@ -136,20 +189,21 @@ def process_message(message_json, data):
 
     # Mission Redirected
     elif message["event"] == "MissionRedirected":
-        # Get matching mission and provider faction, continue if mission is relevant
-        mission, faction = get_mission_and_faction(message["MissionID"], data)
-        if mission is not None:
+        # Get the provider faction
+        faction = get_faction_of_mission(message["MissionID"], data)
+        if faction is not None:
+            mission = faction["missions"][message["MissionID"]]
             # If mission is being redirected back to its origin station, set mission to complete
             if mission["origin"] == message["NewDestinationStation"]:
                 mission["is_complete"] = True
 
     # Mission Abandoned or Mission Completed
     elif message["event"] == "MissionAbandoned" or message["event"] == "MissionCompleted":
-        # Get matching mission and provider faction, continue if mission is relevant
-        mission, faction = get_mission_and_faction(message["MissionID"], data)
-        if mission is not None:
+        # Get the provider faction
+        faction = get_faction_of_mission(message["MissionID"], data)
+        if faction is not None:
             # Remove mission from faction and edit faction info
-            faction["missions"].pop(message["MissionID"])
+            mission = faction["missions"].pop(message["MissionID"])
             faction["total_kills"] -= mission["kills"]
             faction["total_reward"] -= mission["reward"]
             set_highest_kills(data)
@@ -168,7 +222,7 @@ def process_message(message_json, data):
     # Bounty
     elif message["event"] == "Bounty":
         # Find whether the victim is a target or a non target
-        victim_status = "target" if message["VictimFaction"] in get_all_target_factions(data) else "non_target"
+        victim_status = get_victim_status(message["VictimFaction"], data)
         # Edit player info
         data["player"][f"{victim_status}_kills"] += 1
         data["player"][f"{victim_status}_total_reward"] += message["TotalReward"]
@@ -189,18 +243,18 @@ def process_message(message_json, data):
 
 # Data Getters
 
-def get_all_target_factions(data):
-    target_factions = []
+def get_victim_status(victim_faction, data):
     for faction in data["factions_missions"].values():
         for mission in faction["missions"].values():
-            target_factions.append(mission["target"])
-    return target_factions
+            if mission["target"] == victim_faction:
+                return "target"
+    return "non_target"
 
 
-def get_mission_and_faction(mission_id, data):
+def get_faction_of_mission(mission_id, data):
     for faction in data["factions_missions"].values():
         if mission_id in faction["missions"].keys():
-            return faction["missions"][mission_id], faction
+            return faction
 
 
 # Data Setters

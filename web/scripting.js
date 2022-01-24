@@ -226,4 +226,4 @@ for (let i = 0; i < tabs.length; i++) {
 
 
 // Page Load
-eel.reload();
+eel.pipe_put("UPDATE_ALL");
