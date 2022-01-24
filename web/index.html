@@ -63,7 +63,15 @@
                     <i class="material-icons">expand_less</i>
                 </div>
                 <div class="content">
-                    <div id="progress-bar"><div></div><p>5 / 10</p></div>
+                    <div id="missions-progress" class="progress-bar">
+                        <div class="green"></div>
+                        <p>None</p>
+                    </div>
+
+                    <div id="kills-progress" class="progress-bar">
+                        <div class="gold"></div>
+                        <p>None</p>
+                    </div>
                 </div>
             </section>
 
@@ -93,9 +101,9 @@
                 <div class="content">
                     <div id="timerText">00:00:00</div>
                     <div id="timerButtons">
-                        <button id="timerStart">Start</button>
-                        <button id="timerPause">Pause</button>
-                        <button id="timerReset">Reset</button>
+                        <button id="timerStart" class="green">Start</button>
+                        <button id="timerPause" class="gold">Pause</button>
+                        <button id="timerReset" class="red">Reset</button>
                     </div>
                 </div>
             </section>

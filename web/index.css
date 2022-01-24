@@ -1,12 +1,32 @@
-/* Whole Document */
+/* Colours */
 
 :root {
     --off-white: #F8F8FF;
+    --darkest: #1C3948;
+    --darker: #1D6B9D;
+    --middle: #197BBD;
+    --lighter: #63B6EE;
+    --lightest: #70D9FF;
 }
+
+.green {
+    background-color: #5EF55C;
+    /* background-color: lightgreen; */
+}
+
+.gold {
+    background-color: gold;
+}
+
+.red {
+    background-color: #E11A2D;
+}
+
+/* Whole Document */
 
 body {
     margin: 0;
-    background-color: #001E29;
+    background-color: var(--darkest);
     font-family: Roboto;
     color: var(--off-white);
 }
@@ -34,9 +54,11 @@ body {
 /* Header */
 
 header {
-    background-color: #004B66;
+    background-color: var(--darkest);
     display: flex;
-    overflow: hidden;
+    position: fixed;
+    top: 0;
+    width: 100%;
 }
 
 header > div {
@@ -56,6 +78,10 @@ header > div:last-child {
 
 header h1 {
     margin: 0;
+}
+
+main {
+    margin-top: 51px;
 }
 
 /* Menu */
@@ -80,7 +106,7 @@ header h1 {
     display: none;
     cursor: pointer;
     position: absolute;
-    background-color: #00698F;
+    background-color: var(--darkest);
     box-shadow: 0px 2em 2em 0px rgba(0,0,0,0.2);
     z-index: 1;
 }
@@ -94,7 +120,7 @@ header h1 {
 }
 
 #menuContent label:hover {
-    background-color: #001E29;
+    background-color: var(--middle);
 }
 
 .menuShow {
@@ -119,7 +145,7 @@ header h1 {
 }
 
 #alert div {
-    background-color: #0087B8;
+    background-color: var(--lighter);
     position: absolute;
     top: 50%;
     left: 50%;
@@ -132,7 +158,7 @@ header h1 {
 
 #alert button {
     width: 100%;
-    background-color: #004B66;
+    background-color: var(--darker);
     color: white;
     border: none;
     font-family: inherit;
@@ -141,7 +167,7 @@ header h1 {
 }
 
 #alert button:hover {
-    background-color: #026588;
+    background-color: var(--middle);
 }
 
 /* Info Grids */
@@ -167,12 +193,12 @@ header h1 {
 /* Sections and Content */
 
 section {
-    background-color: #70D9FF;
+    background-color: var(--lighter);
     overflow: hidden;
 }
 
 .tab {
-    background-color: #0087B8;
+    background-color: var(--darker);
     padding: 0.7em;
     cursor: pointer;
     display: flex;
@@ -241,24 +267,27 @@ section {
     grid-row: 2;
 }
 
-.lightgreen {
-    background-color: lightgreen;
-}
-
-.yellow {
-    background-color: yellow;
-}
-
 /* Progress */
 
-#progress-bar {
+#progress h3 {
+    color: black;
+}
+
+.progress-bar {
     border: 5px solid black;
     height: 3em;
     background-color: var(--off-white);
     display: grid;
 }
 
-#progress-bar p {
+.progress-bar div {
+    width: 1%;
+    height: 100%;
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.progress-bar p {
     font-size: 1.5em;
     grid-column: 1;
     grid-row: 1;
@@ -268,16 +297,8 @@ section {
     margin: auto;
 }
 
-#progress-bar div {
-    background-color: #30b630;
-    width: 1%;
-    height: 100%;
-    grid-column: 1;
-    grid-row: 1;
-}
-
-#progress h3 {
-    color: black;
+#kills-progress {
+    margin-top: 2em;
 }
 
 /* Timer */
@@ -320,16 +341,4 @@ section {
     border-radius: 0.5em;
     padding: 0.5em;
     cursor: pointer;
-}
-
-#timerStart {
-    background-color: #30b630;
-}
-
-#timerPause {
-    background-color: #FFCA2C;
-}
-
-#timerReset {
-    background-color: #DC3545;
 }

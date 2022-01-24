@@ -1,8 +1,19 @@
+// Element Shortcuts
+
 function newTextElement(tag, text) {
   var element = document.createElement(tag);
   element.textContent = text;
   return element;
 }
+
+function updateProgressBar(id, pct, labelText) {
+  var container = document.getElementById(id);
+  var [bar] = container.getElementsByTagName("div");
+  var [label] = container.getElementsByTagName("p");
+  bar.style.width = `${pct}%`;
+  label.textContent = labelText;
+}
+
 
 // Update Data
 
@@ -10,6 +21,7 @@ function updateData(data) {
   // Tracking variables through the missions
   var missionsCount = 0;
   var totalReward = 0;
+  var missionsComplete = 0;
 
   // Get the div for the missions by faction and empty the div
   var missionsTables = document.createElement("div");
@@ -36,7 +48,8 @@ function updateData(data) {
           row.insertCell().innerHTML = mission_info["kills"];
           row.insertCell().innerHTML = mission_info["reward"].toLocaleString("en-us");
           if (mission_info["is_complete"]) {
-            row.classList.add("lightgreen");
+            row.classList.add("green");
+            missionsComplete += 1;
           }
           missionsCount += 1;
           totalReward += mission_info["reward"]
@@ -52,7 +65,7 @@ function updateData(data) {
       row.insertCell().innerHTML = `${faction_info["total_kills"]} kills ${(highestDiff === 0) ? "" : `(${highestDiff})`}`;
       // row.insertCell().innerHTML = faction_info["total_reward"].toLocaleString("en-us");
       if (faction_info["is_highest_kills"]) {
-        row.classList.add("yellow");
+        row.classList.add("gold");
       }
 
       innerDiv.appendChild(table);
@@ -73,20 +86,26 @@ function updateData(data) {
   var [missionsContent] = document.getElementById("missions").getElementsByClassName("content");
   missionsContent.replaceChildren(...[missionsInfo, missionsTables]);
 
-  // Set Missions Bar Extra
+  // Set Missions Tab Extra
   var [missionsExtra] = document.getElementById("missions").getElementsByClassName("tab-extra");
   missionsExtra.textContent = `- ${missionsCount}`;
 
-  // Progress
-  var progressExtra = document.getElementById("progress").getElementsByClassName("tab-extra")[0];
-  var barContainer = document.getElementById("progress-bar");
-  var bar = barContainer.getElementsByTagName("div")[0];
-  var label = barContainer.getElementsByTagName("p")[0];
-  var barRatio = data["player"]["target_kills"] / data["player"]["required_kills"];
-  var barPct = Math.min((barRatio * 100).toFixed(1), 100);
-  progressExtra.textContent = `- ${barPct}%`;
-  bar.style.width = `${barPct}%`;
-  label.innerHTML = `${data["player"]["target_kills"]} / ${data["player"]["required_kills"]}`;
+  // Progress Calculations
+  var missionsRatio = missionsComplete / missionsCount;
+  var missionsPct = Math.min((missionsRatio * 100).toFixed(1), 100);
+  var killsRatio = data["player"]["target_kills"] / data["player"]["required_kills"];
+  var killsPct = Math.min((killsRatio * 100).toFixed(1), 100);
+
+  // Progress Bars
+  updateProgressBar("missions-progress", missionsPct,
+  `${missionsComplete} of ${missionsCount} Missions Completed`)
+
+  updateProgressBar("kills-progress", killsPct,
+  `${data["player"]["target_kills"]} of ${data["player"]["required_kills"]} Targets Killed`);
+
+  // Progress Tab Extra
+  var [progressExtra] = document.getElementById("progress").getElementsByClassName("tab-extra");
+  progressExtra.textContent = `- Missions: ${missionsPct}% - Kills: ${killsPct}%`;
 
   // Kills and Bounties
   var allKills = data["player"]["target_kills"] + data["player"]["non_target_kills"];
