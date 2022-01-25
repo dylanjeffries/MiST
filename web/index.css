@@ -146,7 +146,7 @@ main {
 
 #overlay div {
     display: none;
-    background-color: var(--lighter);
+    background-color: var(--darker);
     position: absolute;
     top: 50%;
     left: 50%;
@@ -158,12 +158,13 @@ main {
 }
 
 #overlay h2 {
+    text-align: center;
     padding: 1rem;
 }
 
 #overlay button {
     width: 100%;
-    background-color: var(--darker);
+    background-color: var(--darkest);
     color: white;
     border: none;
     font-family: inherit;

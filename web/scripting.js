@@ -130,7 +130,9 @@ eel.expose(updateData);
 
 function updateConfig(config) {
   var refreshReminderState = config["refresh-reminder"] ? "(ON)" : "(OFF)";
-  document.getElementById("refreshReminderToggle").innerHTML = `Toggle Refresh Reminder ${refreshReminderState}`;
+  document.getElementById("refreshReminderToggle").textContent = `Toggle Refresh Reminder ${refreshReminderState}`;
+  var timerReminderState = config["timer-reminder"] ? "(ON)" : "(OFF)";
+  document.getElementById("timerReminderToggle").textContent = `Toggle Timer Reminder ${timerReminderState}`;
 }
 eel.expose(updateConfig);
 
@@ -198,7 +200,6 @@ function triggerRefreshReminder() {
 }
 eel.expose(triggerRefreshReminder);
 
-
 // Reset Saved Data
 
 document.getElementById("resetSavedData").onclick = function () {
@@ -214,9 +215,9 @@ var timerExtra = document.getElementById("timer").getElementsByClassName("tab-ex
 
 function updateTimer() {
   var timerText = timer.getTimeValues().toString();
-  var timerTextHours = (timer.getTotalTimeValues().seconds / 3600).toFixed(3);
-  timerExtra.innerHTML = `- ${timerText}`;
-  document.getElementById("timerText").innerHTML = timerHoursMode ? timerTextHours : timerText;
+  var timerTextHours = `${(timer.getTotalTimeValues().seconds / 3600).toFixed(3)} hours`;
+  timerExtra.textContent = `- ${timerText}`;
+  document.getElementById("timerText").textContent = timerHoursMode ? timerTextHours : timerText;
 }
 
 timer.addEventListener('secondsUpdated', function () {
@@ -231,7 +232,6 @@ timer.addEventListener('reset', function () {
 
 document.getElementById("timerStart").onclick = function () {
   timer.start();
-  triggerRefreshReminder();
 };
 
 document.getElementById("timerPause").onclick = function () {
@@ -247,6 +247,51 @@ document.getElementById("timerText").onclick = function () {
   timerHoursMode = !timerHoursMode;
   updateTimer();
 }
+
+// Timer Reminder
+
+document.getElementById("timerReminderToggle").onclick = function () {
+  eel.pipe_put("TIMER_REMINDER_TOGGLE");
+}
+
+var timerStartReminder = document.getElementById("timerStartReminder");
+
+timerStartReminder.getElementsByTagName("button")[0].onclick = function () {
+  overlay.style.display = "none";
+  timerStartReminder.style.display = "none";
+  timer.start();
+}
+
+timerStartReminder.getElementsByTagName("button")[1].onclick = function () {
+  overlay.style.display = "none";
+  timerStartReminder.style.display = "none";
+}
+
+function triggerTimerStartReminder() {
+  overlay.style.display = "block";
+  timerStartReminder.style.display = "block";
+}
+eel.expose(triggerTimerStartReminder);
+
+var timerPauseReminder = document.getElementById("timerPauseReminder");
+
+timerPauseReminder.getElementsByTagName("button")[0].onclick = function () {
+  overlay.style.display = "none";
+  timerPauseReminder.style.display = "none";
+  timer.pause();
+}
+
+timerPauseReminder.getElementsByTagName("button")[1].onclick = function () {
+  overlay.style.display = "none";
+  timerPauseReminder.style.display = "none";
+}
+
+function triggerTimerPauseReminder() {
+  overlay.style.display = "block";
+  timerPauseReminder.style.display = "block";
+}
+eel.expose(triggerTimerPauseReminder);
+
 
 // Collapsible Sections
  

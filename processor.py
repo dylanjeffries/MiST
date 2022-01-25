@@ -1,4 +1,3 @@
-from configparser import ConfigParser
 import eel
 import json
 import yaml
@@ -24,7 +23,7 @@ data_template = {"factions_missions": {},
 def start(pipe):
     # Load Config and Data Files
     config = load_config()
-    data = load_data(config["data-path"])
+    data = load_data(config)
     eel.updateData(data)
     eel.updateConfig(config)
     eel.disableLoading()
@@ -51,7 +50,7 @@ def start(pipe):
             while not messages.empty():
                 try:
                     message = json.loads(messages.get())
-                    process_message(message, data)
+                    process_message(message, data, config)
                 except json.JSONDecodeError as e:
                     pass
 
@@ -66,6 +65,10 @@ def start(pipe):
                 eel.disableLoading()
             elif id == "REFRESH_REMINDER_TOGGLE":
                 config["refresh-reminder"] = not config["refresh-reminder"]
+                save_config(config)
+                eel.updateConfig(config)
+            elif id == "TIMER_REMINDER_TOGGLE":
+                config["timer-reminder"] = not config["timer-reminder"]
                 save_config(config)
                 eel.updateConfig(config)
             elif id == "SELECT_DATA_PATH":
@@ -90,7 +93,7 @@ def start(pipe):
 
 def load_config():
     current_path = os.getcwd()
-    template = {"data-path": current_path, "refresh-reminder": True}
+    template = {"data-path": current_path, "refresh-reminder": True, "timer-reminder": True}
     try:
         with open("config.yaml", "r") as f:
             config = template | yaml.load(f, Loader=yaml.FullLoader)
@@ -107,8 +110,9 @@ def save_config(config):
 
 # Load Data
 
-def load_data(path):
+def load_data(config):
     # Get all journals in chronological order
+    path = config["data-path"]
     journals = glob.glob(f"{path}/*.log")
     journals.sort(key=lambda x: os.path.getmtime(x), reverse=True)
 
@@ -132,7 +136,7 @@ def load_data(path):
     data = copy.deepcopy(data_template)
     while journals_to_process:
         journal = journals_to_process.pop(-1)
-        process_journal(journal, data)
+        process_journal(journal, data, config)
 
     return data
 
@@ -161,18 +165,18 @@ def get_accepted_missions(journal):
                 accepted_missions.add(json.loads(line)["MissionID"])
     return accepted_missions
 
-def process_journal(journal, data):
+def process_journal(journal, data, config):
     with open(journal, "r", encoding="utf8") as f:
         for line in f.readlines():
             try:
-                process_message(json.loads(line), data)
+                process_message(json.loads(line), data, config, realtime=False)
             except json.JSONDecodeError as e:
                 pass
 
 
 # Process Messages
 
-def process_message(message, data):
+def process_message(message, data, config, realtime=True):
 
     # Mission Accepted
     if message["event"] == "MissionAccepted":
@@ -239,10 +243,14 @@ def process_message(message, data):
     # Docked
     elif message["event"] == "Docked":
         data["player"]["station"] = message["StationName"]
+        if realtime and config["timer-reminder"]:
+            eel.triggerTimerPauseReminder()
 
     # Undocked
     elif message["event"] == "Undocked":
         data["player"]["station"] = ""
+        if realtime and config["timer-reminder"]:
+            eel.triggerTimerStartReminder()
 
 
 # Data Getters
