@@ -5,7 +5,8 @@
         <title>MiST: Mission Stacking Tracker</title>
         <link href='http://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        <link rel="stylesheet" href="index.css"> 
+        <link rel="stylesheet" href="index.css">
+        <link rel="icon" href="favicon.ico?v=2">
         <script src="eel.js"></script>
         <script src="easytimer/easytimer.min.js"></script>
         <script defer src="scripting.js"></script>
@@ -20,7 +21,7 @@
                 </button>
                 <div id="menuContent">
                     <label id="dataPathInput">Select Data Path...</label>
-                    <label id="refreshAlertToggle">Toggle Refresh Alert</label>
+                    <label id="refreshReminderToggle">Toggle Refresh Reminder</label>
                     <label id="resetSavedData">Reset Saved Data</label>
                 </div>
             </div>
@@ -34,9 +35,12 @@
 
         <main>
 
-            <div id="alert">
-                <div>
-                    <h2>Mission Board Refresh Alert</h2>
+            <div id="overlay">
+                <div id="loading">
+                    <img src="spinner.svg"/>
+                </div>
+                <div id="refreshReminder">
+                    <h2>Mission Board Refresh Reminder</h2>
                     <button>OK</button>
                 </div>
             </div>
@@ -88,7 +92,6 @@
                     <h3>Non-Target Bounties: 0 cr</h3>
                     <h3>All Kills: 0</h3>
                     <h3>All Bounties: 0 cr</h3>
-                    <h3>Kills per Hour: 0</h3>
                 </div>
             </section>
 

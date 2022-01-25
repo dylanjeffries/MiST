@@ -27,9 +27,10 @@ def start(pipe):
     data = load_data(config["data-path"])
     eel.updateData(data)
     eel.updateConfig(config)
+    eel.disableLoading()
 
-    # Start the Mission Board Refresh Alert
-    next_mbr_alert_time = get_next_round_ten_minutes()
+    # Start the Mission Board Refresh Reminder
+    next_mbr_reminder_time = get_next_round_ten_minutes()
     
     # Establish the Journal Listener with a queue to pass through new messages
     messages = q.Queue()
@@ -39,11 +40,11 @@ def start(pipe):
 
     # Process Loop
     while True:
-        # Mission Board Refresh Alert
-        if time.time() >= next_mbr_alert_time:
-            next_mbr_alert_time = get_next_round_ten_minutes()
-            if data["player"]["station"] != "" and config["refresh-alert"]:
-                eel.showAlert()
+        # Mission Board Refresh Reminder
+        if time.time() >= next_mbr_reminder_time:
+            next_mbr_reminder_time = get_next_round_ten_minutes()
+            if data["player"]["station"] != "" and config["refresh-reminder"]:
+                eel.triggerRefreshReminder()
 
         # Message Processing
         if not messages.empty():
@@ -62,8 +63,9 @@ def start(pipe):
             if id == "UPDATE_ALL":
                 eel.updateData(data)
                 eel.updateConfig(config)
-            elif id == "REFRESH_ALERT_TOGGLE":
-                config["refresh-alert"] = not config["refresh-alert"]
+                eel.disableLoading()
+            elif id == "REFRESH_REMINDER_TOGGLE":
+                config["refresh-reminder"] = not config["refresh-reminder"]
                 save_config(config)
                 eel.updateConfig(config)
             elif id == "SELECT_DATA_PATH":
@@ -88,10 +90,12 @@ def start(pipe):
 
 def load_config():
     current_path = os.getcwd()
-    template = {"data-path": current_path, "refresh-alert": True}
+    template = {"data-path": current_path, "refresh-reminder": True}
     try:
         with open("config.yaml", "r") as f:
-            return template | yaml.load(f, Loader=yaml.FullLoader)
+            config = template | yaml.load(f, Loader=yaml.FullLoader)
+            config = {k: v for k, v in config.items() if k in template}
+            return config
     except FileNotFoundError as e:
         return template
 

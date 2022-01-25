@@ -130,7 +130,7 @@ main {
 
 /* Overlay */
 
-#alert {
+#overlay {
     display: none;
     position: fixed;
     width: 100%;
@@ -144,7 +144,8 @@ main {
     cursor: pointer;
 }
 
-#alert div {
+#overlay div {
+    display: none;
     background-color: var(--lighter);
     position: absolute;
     top: 50%;
@@ -152,11 +153,15 @@ main {
     transform: translate(-50%, -50%);
 }
 
-#alert h2 {
+#loading {
+    background-color: transparent !important;
+}
+
+#overlay h2 {
     padding: 1rem;
 }
 
-#alert button {
+#overlay button {
     width: 100%;
     background-color: var(--darker);
     color: white;
@@ -166,7 +171,7 @@ main {
     padding: 0.5rem;
 }
 
-#alert button:hover {
+#overlay button:hover {
     background-color: var(--middle);
 }
 

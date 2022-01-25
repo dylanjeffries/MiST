@@ -1,3 +1,5 @@
+var overlay = document.getElementById("overlay");
+
 // Element Shortcuts
 
 function newTextElement(tag, text) {
@@ -127,11 +129,24 @@ eel.expose(updateData);
 // Update Config
 
 function updateConfig(config) {
-  var refreshAlertState = config["refresh-alert"] ? "(ON)" : "(OFF)";
-  document.getElementById("refreshAlertToggle").innerHTML = `Toggle Refresh Alert ${refreshAlertState}`;
+  var refreshReminderState = config["refresh-reminder"] ? "(ON)" : "(OFF)";
+  document.getElementById("refreshReminderToggle").innerHTML = `Toggle Refresh Reminder ${refreshReminderState}`;
 }
 eel.expose(updateConfig);
 
+// Loading Data Overlay
+
+var loading = document.getElementById("loading");
+function triggerLoading() {
+  overlay.style.display = "block";
+  loading.style.display = "block";
+}
+
+function disableLoading() {
+  overlay.style.display = "none";
+  loading.style.display = "none";
+}
+eel.expose(disableLoading);
 
 // Clock
 
@@ -165,21 +180,23 @@ document.getElementById("dataPathInput").onclick = function () {
 }
 
 
-// Mission Board Refresh Alert
+// Mission Board Refresh Reminder
 
-document.getElementById("refreshAlertToggle").onclick = function () {
-  eel.pipe_put("REFRESH_ALERT_TOGGLE");
+document.getElementById("refreshReminderToggle").onclick = function () {
+  eel.pipe_put("REFRESH_REMINDER_TOGGLE");
 }
 
-var alertOverlay = document.getElementById("alert");
-alertOverlay.getElementsByTagName("button")[0].onclick = function () {
-  alertOverlay.style.display = "none";
+var refreshReminder = document.getElementById("refreshReminder");
+refreshReminder.getElementsByTagName("button")[0].onclick = function () {
+  overlay.style.display = "none";
+  refreshReminder.style.display = "none";
 }
 
-function showAlert() {
-  alertOverlay.style.display = "block";
+function triggerRefreshReminder() {
+  overlay.style.display = "block";
+  refreshReminder.style.display = "block";
 }
-eel.expose(showAlert);
+eel.expose(triggerRefreshReminder);
 
 
 // Reset Saved Data
@@ -214,6 +231,7 @@ timer.addEventListener('reset', function () {
 
 document.getElementById("timerStart").onclick = function () {
   timer.start();
+  triggerRefreshReminder();
 };
 
 document.getElementById("timerPause").onclick = function () {
@@ -245,4 +263,5 @@ for (let i = 0; i < tabs.length; i++) {
 
 
 // Page Load
+triggerLoading();
 eel.pipe_put("UPDATE_ALL");
