@@ -77,7 +77,7 @@ function updateData(data) {
   missionsTables.appendChild(innerDiv);
 
   // Missions Info
-  var rewardPerKill = Math.round(totalReward / data["player"]["required_kills"]);
+  var rewardPerKill = Math.round(totalReward / data["player"]["required_kills"]) || 0;
   var missionsInfo = document.createElement("div");
   missionsInfo.classList.add("info-grid");
   var totalRewardElement = newTextElement("h3", `Total Reward: ${totalReward.toLocaleString("en-us")} cr`);
@@ -93,9 +93,9 @@ function updateData(data) {
   missionsExtra.textContent = `- ${missionsCount}`;
 
   // Progress Calculations
-  var missionsRatio = missionsComplete / missionsCount;
+  var missionsRatio = (missionsComplete / missionsCount) || 0;
   var missionsPct = Math.min((missionsRatio * 100).toFixed(1), 100);
-  var killsRatio = data["player"]["target_kills"] / data["player"]["required_kills"];
+  var killsRatio = (data["player"]["target_kills"] / data["player"]["required_kills"]) || 0;
   var killsPct = Math.min((killsRatio * 100).toFixed(1), 100);
 
   // Progress Bars
@@ -143,6 +143,7 @@ function triggerLoading() {
   overlay.style.display = "block";
   loading.style.display = "block";
 }
+eel.expose(triggerLoading);
 
 function disableLoading() {
   overlay.style.display = "none";
@@ -200,10 +201,14 @@ function triggerRefreshReminder() {
 }
 eel.expose(triggerRefreshReminder);
 
-// Reset Saved Data
+// Reload and Reset Data
 
-document.getElementById("resetSavedData").onclick = function () {
-  eel.pipe_put("RESET_SAVED_DATA");
+document.getElementById("reloadData").onclick = function () {
+  eel.pipe_put("RELOAD_DATA");
+}
+
+document.getElementById("resetData").onclick = function () {
+  eel.pipe_put("RESET_DATA");
 }
 
 

@@ -10,11 +10,11 @@ import queue as q
 from watchdog.observers import Observer
 from tkinter import *
 from tkinter import filedialog
-from listener import Listener
+from handler import Handler
 
 
 data_template = {"factions_missions": {},
-                "player": {"station": "", "required_kills": 0, "target_kills": 0, "non_target_kills": 0,
+                "player": {"station": "", "balance": 0, "required_kills": 0, "target_kills": 0, "non_target_kills": 0,
                             "target_total_reward": 0, "non_target_total_reward": 0}}
 
 
@@ -31,10 +31,11 @@ def start(pipe):
     # Start the Mission Board Refresh Reminder
     next_mbr_reminder_time = get_next_round_ten_minutes()
     
-    # Establish the Journal Listener with a queue to pass through new messages
+    # Establish the Journal Handler with a queue to pass through new messages
     messages = q.Queue()
     observer = Observer()
-    observer.schedule(Listener(messages, config["data-path"]), path=config["data-path"], recursive=False)
+    handler = Handler(messages, config["data-path"])
+    observer.schedule(handler, path=config["data-path"], recursive=False)
     observer.start()
 
     # Process Loop
@@ -50,7 +51,7 @@ def start(pipe):
             while not messages.empty():
                 try:
                     message = json.loads(messages.get())
-                    process_message(message, data, config)
+                    process_message(message, data, config, handler=handler)
                 except json.JSONDecodeError as e:
                     pass
 
@@ -81,11 +82,19 @@ def start(pipe):
                     config["data-path"] = folder
                     save_config(config)
                     observer.unschedule_all()
-                    observer.schedule(Listener(messages, config["data-path"]), path=config["data-path"], recursive=False)
-            elif id == "RESET_SAVED_DATA":
-                data = copy.deepcopy(data_template)
+                    handler = Handler(messages, config["data-path"])
+                    observer.schedule(handler, path=config["data-path"], recursive=False)
+            elif id == "RELOAD_DATA":
+                eel.triggerLoading()
+                data = load_data(config)
                 eel.updateData(data)
-        
+                eel.disableLoading()
+            elif id == "RESET_DATA":
+                station = data["player"]["station"]
+                data = copy.deepcopy(data_template)
+                data["player"]["station"] = station
+                eel.updateData(data)
+
         eel.sleep(1)
 
 
@@ -120,7 +129,7 @@ def load_data(config):
     journals_to_process = []
     existing_missions = set()
     for j in journals:
-        if does_journal_contain_load_game(j):
+        if does_journal_contain_missions(j):
 
             if not journals_to_process:
                 existing_missions = get_existing_missions(j)
@@ -140,10 +149,10 @@ def load_data(config):
 
     return data
 
-def does_journal_contain_load_game(journal):
+def does_journal_contain_missions(journal):
     with open(journal, "r", encoding="utf8") as f:
         for line in f.readlines():
-            if '"event":"LoadGame"' in line:
+            if '"event":"Missions"' in line:
                 return True
     return False
 
@@ -176,7 +185,7 @@ def process_journal(journal, data, config):
 
 # Process Messages
 
-def process_message(message, data, config, realtime=True):
+def process_message(message, data, config, realtime=True, handler=None):
 
     # Mission Accepted
     if message["event"] == "MissionAccepted":
@@ -251,6 +260,17 @@ def process_message(message, data, config, realtime=True):
         data["player"]["station"] = ""
         if realtime and config["timer-reminder"]:
             eel.triggerTimerStartReminder()
+
+    # Status (Balance Check)
+    elif message["event"] == "Status":
+        if realtime:
+            # Balance check for missed Mission Accepted
+            if message["Balance"] > data["player"]["balance"]:
+                handler.process_latest_journal()
+                data["player"]["balance"] = message["Balance"]
+            # Docked check for missed Docked, Docked Flag in Status compared to Data Docked State
+            elif message["Flags"] % 2 != bool(data["player"]["station"]):
+                handler.process_latest_journal()
 
 
 # Data Getters
