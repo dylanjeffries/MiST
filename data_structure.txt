@@ -20,6 +20,7 @@ data: {
 	},
 	player: {
 		station: STRING,
+		balance: INTEGER,
 		required_kills: INTEGER,
 		target_kills: INTEGER,
 		non_target_kills: INTEGER,
