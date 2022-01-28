@@ -21,9 +21,10 @@ data_template = {"factions_missions": {},
 # Start
 
 def start(pipe):
-    # Load Config and Data Files
+    # Load Config, Data, and Timer
     config = load_config()
     data = load_data(config)
+    load_timer()
     eel.updateData(data)
     eel.updateConfig(config)
     eel.disableLoading()
@@ -115,6 +116,23 @@ def load_config():
 def save_config(config):
     with open("config.yaml", "w") as f:
         yaml.dump(config, f)
+
+
+# Save Timer
+def load_timer():
+    try:
+        with open("timer.save", "r") as f:
+            string_values = f.read().split(":")[::-1]
+            values = [0] + list(map(int, string_values)) + [0]
+            eel.setTimer(values)
+        os.remove("timer.save")
+    except FileNotFoundError as e:
+        pass
+            
+def save_timer(s):
+    with open("timer.save", "w") as f:
+        f.write(s)
+eel.expose(save_timer)
 
 
 # Load Data
@@ -265,11 +283,11 @@ def process_message(message, data, config, realtime=True, handler=None):
     elif message["event"] == "Status":
         if realtime:
             # Balance check for missed Mission Accepted
-            if message["Balance"] > data["player"]["balance"]:
+            if message.get("Balance", 0) > data["player"]["balance"]:
                 handler.process_latest_journal()
                 data["player"]["balance"] = message["Balance"]
             # Docked check for missed Docked, Docked Flag in Status compared to Data Docked State
-            elif message["Flags"] % 2 != bool(data["player"]["station"]):
+            elif message.get("Flags", 0) % 2 != bool(data["player"]["station"]):
                 handler.process_latest_journal()
 
 

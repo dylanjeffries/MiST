@@ -225,13 +225,17 @@ function updateTimer() {
   document.getElementById("timerText").textContent = timerHoursMode ? timerTextHours : timerText;
 }
 
+function setTimer(values) {
+  timer.start({startValues: values});
+  timer.pause();
+  updateTimer();
+}
+eel.expose(setTimer);
+
 timer.addEventListener('secondsUpdated', function () {
   updateTimer();
 });
 timer.addEventListener('started', function () {
-  updateTimer();
-});
-timer.addEventListener('reset', function () {
   updateTimer();
 });
 
@@ -246,12 +250,22 @@ document.getElementById("timerPause").onclick = function () {
 document.getElementById("timerReset").onclick = function () {
   timer.reset();
   timer.stop();
+  updateTimer();
 };
 
 document.getElementById("timerText").onclick = function () {
   timerHoursMode = !timerHoursMode;
   updateTimer();
 }
+
+// Send timer value before close
+window.onbeforeunload = function (e) {
+  var time = timer.getTimeValues().toString();
+  if (time !== "00:00:00") {
+    eel.save_timer(time);
+  }
+}
+
 
 // Timer Reminder
 
