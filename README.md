@@ -58,3 +58,8 @@ The application employs a Python back-end, and a HTML-CSS-JS front-end, linked t
  4. Select the folder that contains all your Journal .log files, typically called "Elite Dangerous"
  5. To see your data now choose "Reload Data" from the Menu or restart the application
  6. Try the application alongside Elite and make the big bucks
+ 
+ ## Known Issues
+
+ - Inaccurate data may be displayed after startup. This is usually caused by Watchdog detecting a extra update to the data directory for no reason other than Windows being Windows. If inaccurate data is ever displayed, using the "Reload Data" option from the menu should always fix it
+ - Out-of-sync readings between the Target Kills and the Missions being completed. This should never be an issue when Solo but will almost certainly occur during Wing/Team play. Unfortunately,  Frontier put insufficient information into their journals about Wing/Team member kills and therefore those cannot be tracked, as well as the fact that kill contributions for Wing/Team members are broken anyway.
