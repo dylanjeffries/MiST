@@ -13,8 +13,6 @@ The inspiration for this project hails from personal experience and friends' int
 
 The application employs a Python back-end, and a HTML-CSS-JS front-end, linked together via the Python [Eel](https://github.com/ChrisKnott/Eel) library. To watch for updates in Journal and Status files, the Python library [Watchdog](https://github.com/gorakhargosh/watchdog) is used. Finally, the config file containing user preferences is in the YAML format, and the application executable is built via PyInstaller. 
 
-The Missions table,  which presents all active missions sorted by the provider faction and highlights the highest kills required by any one faction, intends to assist the player in accepting the least amount of kills for the highest credit gains.
-
 ## Features
 <div align="center">
 	<h3>Example Scenario</h3>
