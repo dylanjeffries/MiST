@@ -1,7 +1,7 @@
 <div align="center">
-	<img src="https://github.com/dylanjeffries/MiST/blob/main/readme/logo.png?raw=true"/>
+	<img width=160 src="https://github.com/dylanjeffries/MiST/blob/main/readme/logo.png?raw=true"/>
 	<br>
-	<img src="https://img.shields.io/github/v/release/dylanjeffries/MiST?include_prereleases&style=for-the-										badge">
+	<img src="https://img.shields.io/github/v/release/dylanjeffries/MiST?include_prereleases&style=for-the-badge">
 	<img src="https://img.shields.io/github/downloads/dylanjeffries/MiST/total?color=green&style=for-the-badge">
 	<h1>MiST: Mission Stacking Tracker</h1>
 </div>
@@ -13,26 +13,50 @@ The inspiration for this project hails from personal experience and friends' int
 
 The application employs a Python back-end, and a HTML-CSS-JS front-end, linked together via the Python [Eel](https://github.com/ChrisKnott/Eel) library. To watch for updates in Journal and Status files, the Python library [Watchdog](https://github.com/gorakhargosh/watchdog) is used. Finally, the config file containing user preferences is in the YAML format, and the application executable is built via PyInstaller. 
 
-
-
-
-## Features
-### Missions
-<img src="https://github.com/dylanjeffries/MiST/blob/main/readme/missions.png?raw=true"/>
 The Missions table,  which presents all active missions sorted by the provider faction and highlights the highest kills required by any one faction, intends to assist the player in accepting the least amount of kills for the highest credit gains.
 
-### Progress
-<img src="https://github.com/dylanjeffries/MiST/blob/main/readme/progress.png?raw=true"/>
+## Features
+<div align="center">
+	<h3>Example Scenario</h3>
+	<img width=700 src="https://github.com/dylanjeffries/MiST/blob/main/readme/example.png?raw=true">
+</div>
 
-### Kills
-<img src="https://github.com/dylanjeffries/MiST/blob/main/readme/kills.png?raw=true"/>
+### Missions Tracking
+
+ - **Missions Tables** - Sorted by Provider Faction, all active missions are displayed
+ - **Provider Faction Sums** - The sum of all missions for each provider are calculated to help with mission selection and Reward per Kill optimisation
+ - **Colour Coding** - The Provider Sum that sets the highest kills required is coloured Gold, and a mission that has had its kill requirement satisfied is coloured Green
+ - **Reward Info** - Total Reward of all missions, and Reward per Kill using the Total Reward and the highest kills requirement are calculated
+
+### Progress Tracking
+
+- **Missions Completed** - Progress bar that shows the number of active missions out of all missions that have been redirected to their origin station and have therefore been satisfied
+- **Targets Killed** - Progress bar that shows how many targets have been killed against the highest kills from the Provider Faction sums which doubles as the required kill count
+
+### Kills and Bounties Tracking
+
+ - **Kills Info** - Target Kills, Non-Target Kills, and the resultant All Kills is displayed and updates as you elimate more commanders
+ - **Bounties Info** - Target Bounties, Non-Target Bounties, and the total All Bounties are displayed so that you can keep track of all the monies you'll gain from your hunt
 
 ### Timer
-<img src="https://github.com/dylanjeffries/MiST/blob/main/readme/timer.png?raw=true"/>
 
-### Menu
-<img src="https://github.com/dylanjeffries/MiST/blob/main/readme/menu.png?raw=true"/>
+ - **Timer Controls** - Start, Pause, and Reset buttons that do exactly what they say
+ - **Time Display** - The display defaults to the Hours:Minutes:Seconds format, but click on the display box to toggle between the default mode and the Hours Decimal mode that is handy for calculating your credits per hour
+ - **Timer Reminder** - A toggleable reminder via the menu, triggers a Timer Start reminder when you undock from a station or a Timer Pause reminder when you dock to a station
+
+### Other
+
+ - **Sections** - Sections can be collapsed, a very small summary of their stats is still displayed on the section tab
+ - **Mission Board Refresh Reminder** - A toggleable reminder via the menu, triggers on each ten minute mark (e.g. 15:10, 15:20,  15:30 etc.) to coincide with a refresh of available missions at a station. Only triggers if you are currently docked.
+ - **Select Data Path Option** - A menu option that lets you select the path of your Elite Dangerous Journal files
+ - **Reload Data Option** - A menu option that runs the full read and load process for Journals. Very good at correcting cases of inaccurate data display or temporary error
+ - **Reset Data Option** - A menu option that clears the in-memory data and lets you start a new mission set from a clean slate, the reload option can still be used to fetch all the relevant data back if required
 
 ## How to use 
 
-How to use
+ 1. Download the latest release's executable from [here](https://github.com/dylanjeffries/MiST/releases)
+ 2. Run the application
+ 3. Go to the Menu in the top left and choose "Select Data Path..."
+ 4. Select the folder that contains all your Journal .log files, typically called "Elite Dangerous"
+ 5. To see your data now choose "Reload Data" from the Menu or restart the application
+ 6. Try the application alongside Elite and make the big bucks
